@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">MdpGroup6yr1920sem2</string>
+    <string name="on_off">ON/OFF</string>
+    <string name="enable_discoverable">Enable Discoverable</string>
+    <string name="discover">Discover</string>
+    <string name="start_connection">Start Connection</string>
+    <string name="enter_text_here">Enter Text Here</string>
+    <string name="send">SEND</string>
+    <string name="incoming_messages">Incoming Messages</string>
 </resources>
