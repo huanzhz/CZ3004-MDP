@@ -2,7 +2,7 @@ package com.example.mdpgroup6yr1920sem2;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -13,36 +13,29 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.nio.charset.Charset;
+import com.google.android.material.tabs.TabItem;
+import com.google.android.material.tabs.TabLayout;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class MainActivity extends AppCompatActivity{
+
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private TabItem tab1, tab2, tab3;
+    public PageAdapter pageradapter;
+
     private static final String TAG = "MainActivity";
 
     BluetoothAdapter mBluetoothAdapter;
-    Button btnEnableDisable_Discoverable;
-
     BluetoothConnectionService mBluetoothConnection;
 
-    Button btnStartConnection;
-    Button btnSend;
-
-    TextView incomingMessages;
     StringBuilder messages;
 
-    EditText etSend;
-
-    //private static final UUID MY_UUID_INSECURE = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
     private static final UUID MY_UUID_INSECURE = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     BluetoothDevice mBTDevice;
@@ -52,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public DeviceListAdapter mDeviceListAdapter;
 
     ListView lvNewDevices;
-
 
     // Create a BroadcastReceiver for ACTION_FOUND
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
@@ -119,9 +111,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     };
 
-
-
-
     /**
      * Broadcast Receiver for listing devices that are not yet paired
      * -Executed by btnDiscover() method.
@@ -171,8 +160,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     };
 
-
-
     @Override
     protected void onDestroy() {
         //Log.d(TAG, "onDestroy: called.");
@@ -188,67 +175,52 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button btnONOFF = (Button) findViewById(R.id.btnONOFF);
-        btnEnableDisable_Discoverable = (Button) findViewById(R.id.btnDiscoverable_on_off);
-        lvNewDevices = (ListView) findViewById(R.id.lvNewDevices);
+
+        // For tablayout
+        tabLayout = (TabLayout) findViewById(R.id.tablayout);
+        tab1 = (TabItem) findViewById(R.id.Tab1);
+        tab2 = (TabItem) findViewById(R.id.Tab2);
+        tab3 = (TabItem) findViewById(R.id.Tab3);
+        viewPager = findViewById(R.id.viewpager);
+
+        pageradapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(pageradapter);
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+                if(tab.getPosition() == 0){
+                    pageradapter.notifyDataSetChanged();
+                }else if(tab.getPosition() == 1){
+                    pageradapter.notifyDataSetChanged();
+                }else if(tab.getPosition() == 2){
+                    pageradapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        // bluetooth variables
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mBTDevices = new ArrayList<>();
-
-        btnStartConnection = (Button) findViewById(R.id.btnStartConnection);
-        btnSend = (Button) findViewById(R.id.btnSend);
-        etSend = (EditText) findViewById(R.id.editText);
-
-        // Receive Messages
-        incomingMessages = (TextView) findViewById(R.id.incomingMessage);
-        messages = new StringBuilder();
-        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
 
         //Broadcasts when bond state changes (ie:pairing)
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mBroadcastReceiver4, filter);
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        lvNewDevices.setOnItemClickListener(MainActivity.this);
-
-
-        btnONOFF.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Log.d(TAG, "onClick: enabling/disabling bluetooth.");
-                enableDisableBT();
-            }
-        });
-
-        btnStartConnection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startConnection();
-            }
-        });
-
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                byte[] bytes = etSend.getText().toString().getBytes(Charset.defaultCharset());
-                mBluetoothConnection.write(bytes);
-
-                etSend.setText("");
-            }
-        });
-
     }
-
-    // Broadcast Receiver function
-    BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String text = intent.getStringExtra("theMessage");
-
-            messages.append(text + "\n");
-
-            incomingMessages.setText(messages);
-        }
-    };
 
     //create method for starting connection
 //***remember the conncction will fail and app will crash if you haven't paired first
@@ -264,8 +236,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         mBluetoothConnection.startClient(device,uuid);
     }
-
-
 
     public void enableDisableBT(){
         if(mBluetoothAdapter == null){
@@ -290,9 +260,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
-
-    public void btnEnableDisable_Discoverable(View view) {
-        //Log.d(TAG, "btnEnableDisable_Discoverable: Making device discoverable for 300 seconds.");
+    public void btnEnableDisableDiscoverable() {
+        //Log.d(TAG, "btnEnableDisableDiscoverable: Making device discoverable for 300 seconds.");
 
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
@@ -304,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void btnDiscover(View view) {
+    public void btnDiscover() {
         //Log.d(TAG, "btnDiscover: Looking for unpaired devices.");
         Toast.makeText(getApplicationContext(), "Scanning...", Toast.LENGTH_LONG).show();
 
@@ -351,27 +320,4 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        //first cancel discovery because its very memory intensive.
-        mBluetoothAdapter.cancelDiscovery();
-
-        //Log.d(TAG, "onItemClick: You Clicked on a device.");
-        String deviceName = mBTDevices.get(i).getName();
-        String deviceAddress = mBTDevices.get(i).getAddress();
-
-        //Log.d(TAG, "onItemClick: deviceName = " + deviceName);
-        //Log.d(TAG, "onItemClick: deviceAddress = " + deviceAddress);
-        Toast.makeText(getApplicationContext(), "Connecting to "+deviceName, Toast.LENGTH_LONG).show();
-
-        //create the bond.
-        //NOTE: Requires API 17+? I think this is JellyBean
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
-            //Log.d(TAG, "Trying to pair with " + deviceName);
-            mBTDevices.get(i).createBond();
-
-            mBTDevice = mBTDevices.get(i);
-            mBluetoothConnection = new BluetoothConnectionService(MainActivity.this);
-        }
-    }
 }

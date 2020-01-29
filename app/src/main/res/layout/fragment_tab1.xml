@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".tab1">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:text="@string/on_off"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/btnONOFF"
+            android:layout_alignParentEnd="true"
+            tools:ignore="RelativeOverlap" />
+
+        <Button
+            android:text="@string/enable_discoverable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnDiscoverable_on_off"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnFindUnpairedDevices"
+            android:text="@string/discover" />
+
+        <ListView
+            android:layout_marginTop="15dp"
+            android:layout_below="@+id/btnStartConnection"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:id="@+id/lvNewDevices"/>
+
+        <Button
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnFindUnpairedDevices"
+            android:id="@+id/btnStartConnection"
+            android:text="@string/start_connection"/>
+
+        <EditText
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_text_here"
+            android:layout_below="@+id/lvNewDevices"
+            android:layout_alignParentStart="true"
+            android:id="@+id/editText"
+            android:layout_alignParentLeft="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send"
+            android:id="@+id/btnSend"
+            android:layout_toRightOf="@+id/editText"
+            android:layout_below="@+id/lvNewDevices"
+            android:layout_toEndOf="@+id/editText" />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:text="@string/incoming_messages"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/editText"
+            android:layout_alignParentStart="true"
+            android:id="@+id/incomingMessage"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true" />
+    </RelativeLayout>
+
+
+</FrameLayout>

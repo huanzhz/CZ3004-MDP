@@ -7,4 +7,10 @@
     <string name="enter_text_here">Enter Text Here</string>
     <string name="send">SEND</string>
     <string name="incoming_messages">Incoming Messages</string>
+    <string name="tab_text1">Tab 1</string>
+    <string name="tab_text2">Tab 2</string>
+    <string name="tab_text3">Tab 3</string>
+
+    <string name="hello_blank_fragment2">Hello blank fragment2</string>
+    <string name="hello_blank_fragment3">Hello blank fragment3</string>
 </resources>
