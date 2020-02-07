@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".tab2">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment2" />
+    <view
+        android:id="@+id/mapView"
+        android:layout_gravity="center_horizontal"
+        class="com.example.mdpgroup6yr1920sem2.MapView"
+        android:layout_width="450dp"
+        android:layout_height="600dp" />
+
+    <!--<ImageButton
+        android:id="@+id/upBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/direction_up" />
+
+    <ImageButton
+        android:id="@+id/downBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/direction_down" />
+
+    <ImageButton
+        android:id="@+id/leftBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/btnRight.png" />
+
+    <ImageButton
+        android:id="@+id/rightBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/direction_right" />-->
 
 </FrameLayout>
