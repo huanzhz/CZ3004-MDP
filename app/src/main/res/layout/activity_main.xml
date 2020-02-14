@@ -10,29 +10,33 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tablayout"
+        app:tabGravity="fill"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        >
+        app:fontFamily="sans-serif-light"
+        app:tabTextAppearance="@style/TabLayoutTextStyle"
+        app:tabInlineLabel="true"
+    >
 
         <com.google.android.material.tabs.TabItem
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:id="@+id/Tab1"
-            android:text="@string/tab_text1"
+            android:text="@string/tab_MapText"
             />
 
         <com.google.android.material.tabs.TabItem
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:id="@+id/Tab2"
-            android:text="@string/tab_text2"
+            android:text="@string/tab_BTText"
             />
 
         <com.google.android.material.tabs.TabItem
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:id="@+id/Tab3"
-            android:text="@string/tab_text3"
+            android:text="@string/tab_CommText"
             />
 
     </com.google.android.material.tabs.TabLayout>
