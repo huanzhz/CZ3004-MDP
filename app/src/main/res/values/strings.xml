@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">MdpGroup6yr1920sem2</string>
+
     <string name="on_off">ON/OFF</string>
     <string name="enable_discoverable">Enable Discoverable</string>
     <string name="discover">Discover</string>
@@ -7,10 +8,25 @@
     <string name="enter_text_here">Enter Text Here</string>
     <string name="send">SEND</string>
     <string name="incoming_messages">Incoming Messages</string>
+
     <string name="tab_text1">Tab 1</string>
     <string name="tab_text2">Tab 2</string>
     <string name="tab_text3">Tab 3</string>
 
-    <string name="hello_blank_fragment2">Hello blank fragment2</string>
+    <string name="tab_BTText">Bluetooth</string>
+    <string name="tab_MapText">Map</string>
+    <string name="tab_CommText">Communication</string>
+
+    <string name="btn_up">Up</string>
+    <string name="btn_down">Down</string>
+    <string name="btn_left">Left</string>
+    <string name="btn_right">Right</string>
+    <string name="btn_start">Start</string>
+    <string name="btn_explore">Explore</string>
+    <string name="btn_reset">Reset</string>
+    <string name="btn_waypoint">Waypoint</string>
+    <string name="btn_btstatus">Bluetooth: Not-Connected</string>
+    <string name="btn_robotstatus">Robot Status: N/A</string>
+
     <string name="hello_blank_fragment3">Hello blank fragment3</string>
 </resources>
