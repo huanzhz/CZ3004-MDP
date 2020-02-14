@@ -1,13 +1,23 @@
 package com.example.mdpgroup6yr1920sem2;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.nio.charset.Charset;
 
 
 /**
@@ -20,12 +30,55 @@ public class tab3 extends Fragment {
         // Required empty public constructor
     }
 
+    public MainActivity mainActivityObj;
+    TextView incomingMessages;
+    private View view;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState){
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tab3, container, false);
+        if (view == null) {
+            // get the main activity from MainActivity class
+            mainActivityObj = (MainActivity) getActivity();
+
+            view = inflater.inflate(R.layout.fragment_tab3, container, false);
+
+            // Send button
+            Button btnSend = (Button) view.findViewById(R.id.btnSend);
+            final EditText etSend = (EditText) view.findViewById(R.id.editText);
+
+            btnSend.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    byte[] bytes = etSend.getText().toString().getBytes(Charset.defaultCharset());
+                    mainActivityObj.mBluetoothConnection.write(bytes);
+
+                    etSend.setText("");
+                }
+            });
+
+            // Receive Messages
+            incomingMessages = (TextView) view.findViewById(R.id.incomingMessage);
+            mainActivityObj.messages = new StringBuilder();
+            LocalBroadcastManager.getInstance(mainActivityObj.getApplicationContext()).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
+
+        }
+        return view;
     }
+
+
+    // Broadcast Receiver function
+    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String text = intent.getStringExtra("theMessage");
+
+            mainActivityObj.messages.append(text + "\n");
+
+            incomingMessages.setText(mainActivityObj.messages);
+        }
+    };
 
 }

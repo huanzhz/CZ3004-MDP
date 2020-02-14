@@ -58,32 +58,6 @@ public class MainActivity extends AppCompatActivity{
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
     }
 
-    // Create a BroadcastReceiver for ACTION_FOUND
-    private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            // When discovery finds a device
-            if (action.equals(mBluetoothAdapter.ACTION_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, mBluetoothAdapter.ERROR);
-
-                switch(state){
-                    case BluetoothAdapter.STATE_OFF:
-                        //Log.d(TAG, "onReceive: STATE OFF");
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_OFF:
-                        //Log.d(TAG, "mBroadcastReceiver1: STATE TURNING OFF");
-                        break;
-                    case BluetoothAdapter.STATE_ON:
-                        //Log.d(TAG, "mBroadcastReceiver1: STATE ON");
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_ON:
-                        //Log.d(TAG, "mBroadcastReceiver1: STATE TURNING ON");
-                        break;
-                }
-            }
-        }
-    };
-
     /**
      * Broadcast Receiver for changes made to bluetooth states such as:
      * 1) Discoverability mode on/off or expire.
@@ -176,7 +150,6 @@ public class MainActivity extends AppCompatActivity{
     protected void onDestroy() {
         //Log.d(TAG, "onDestroy: called.");
         super.onDestroy();
-        unregisterReceiver(mBroadcastReceiver1);
         unregisterReceiver(mBroadcastReceiver2);
         unregisterReceiver(mBroadcastReceiver3);
         unregisterReceiver(mBroadcastReceiver4);
@@ -249,29 +222,6 @@ public class MainActivity extends AppCompatActivity{
         //Log.d(TAG, "startBTConnection: Initializing RFCOM Bluetooth Connection.");
 
         mBluetoothConnection.startClient(device,uuid);
-    }
-
-    public void enableDisableBT(){
-        if(mBluetoothAdapter == null){
-            //Log.d(TAG, "enableDisableBT: Does not have BT capabilities.");
-            Toast.makeText(getApplicationContext(), "enableDisableBT: Does not have BT capabilities.", Toast.LENGTH_LONG).show();
-        }
-        if(!mBluetoothAdapter.isEnabled()){
-            //Log.d(TAG, "enableDisableBT: enabling BT.");
-            Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivity(enableBTIntent);
-
-            IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(mBroadcastReceiver1, BTIntent);
-        }
-        if(mBluetoothAdapter.isEnabled()){
-            //Log.d(TAG, "enableDisableBT: disabling BT.");
-            mBluetoothAdapter.disable();
-
-            IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(mBroadcastReceiver1, BTIntent);
-        }
-
     }
 
     public void btnEnableDisableDiscoverable() {
