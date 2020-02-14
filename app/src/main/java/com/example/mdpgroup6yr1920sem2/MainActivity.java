@@ -26,8 +26,13 @@ public class MainActivity extends AppCompatActivity{
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private int[] tabIcons = {
+            R.drawable.tab_map,
+            R.drawable.tab_bluetooth
+    };
     private TabItem tab1, tab2, tab3;
     public PageAdapter pageradapter;
+
 
     private static final String TAG = "MainActivity";
 
@@ -45,6 +50,11 @@ public class MainActivity extends AppCompatActivity{
     public DeviceListAdapter mDeviceListAdapter;
 
     ListView lvNewDevices;
+
+    private void setupTabIcons() {
+        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+    }
 
     // Create a BroadcastReceiver for ACTION_FOUND
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
@@ -186,7 +196,7 @@ public class MainActivity extends AppCompatActivity{
         pageradapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageradapter);
 
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
@@ -211,6 +221,8 @@ public class MainActivity extends AppCompatActivity{
         });
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        setupTabIcons();
 
         // bluetooth variables
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

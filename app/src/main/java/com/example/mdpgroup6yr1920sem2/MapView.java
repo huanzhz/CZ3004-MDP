@@ -15,6 +15,11 @@ import androidx.annotation.Nullable;
 
 public class MapView extends View {
 
+    //Controls for the robot
+    ImageButton upBtn;
+    ImageButton leftBtn;
+    ImageButton downBtn;
+    ImageButton rightBtn;
 
     private static final String TAG = "MazeView";
     private static Cell[][] cells;
@@ -42,19 +47,19 @@ public class MapView extends View {
         super(context, attrs);
 
         wallPaint = new Paint();
-        wallPaint.setColor(Color.parseColor("#BDBDBD"));
+        wallPaint.setColor(Color.parseColor("#64B5F6"));
         wallPaint.setStrokeWidth(WALL_THICKNESS);
 
         robotPaint = new Paint();
-        robotPaint.setColor(Color.parseColor("#66BB6A"));
+        robotPaint.setColor(Color.parseColor("#1DE9B6"));
 
         //COLOR FOR ROBOT DIRECTION
         directionPaint = new Paint();
-        directionPaint.setColor(Color.parseColor("#5C6BC0"));
+        directionPaint.setColor(Color.parseColor("#FFD600"));
 
         //COLOR FOR UNEXPLORED PATH
         unexploredPaint = new Paint();
-        unexploredPaint.setColor(Color.parseColor("#E0E0E0"));
+        unexploredPaint.setColor(Color.parseColor("#F5F5F5"));
 
         gridNumberPaint = new Paint();
         gridNumberPaint.setColor(Color.BLACK);
@@ -67,16 +72,49 @@ public class MapView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        renderBtn();
         alignMap(canvas);
         drawBorder(canvas);
         initCells();
         drawCell(canvas);
-        drawGridNumber(canvas);
         initRobot(canvas);
         drawRobotDirection(canvas);
         //initGoal(canvas);
 
     }
+
+    private void renderBtn(){
+        upBtn = (ImageButton) findViewById(R.id.btnTop);
+        leftBtn = (ImageButton) findViewById(R.id.btnLeft);
+        rightBtn = (ImageButton) findViewById(R.id.btnRight);
+        downBtn = (ImageButton) findViewById(R.id.btnBottom);
+
+        /*upBtn.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                moveRobot("Up");
+            }
+        });
+
+        leftBtn.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                moveRobot("Up");
+            }
+        });
+
+        rightBtn.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                moveRobot("Up");
+            }
+        });
+
+        downBtn.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                moveRobot("Up");
+            }
+        });*/
+    }
+
+
 
     private void alignMap(Canvas canvas) {
         //Canvas Color
@@ -100,36 +138,6 @@ public class MapView extends View {
 
         //set margin in place
         canvas.translate(hMargin, vMargin);
-    }
-
-    //DRAW NUMBERS ON MAP GRID
-    private void drawGridNumber(Canvas canvas) {
-
-        //GRID NUMBER FOR ROW
-        for (int x = 0; x < 15; x++) {
-
-            if (x > 9 && x < 15) {
-
-                canvas.drawText(Integer.toString(x), cells[x][19].startX + (cellSize / 5), cells[x][19].endY + (cellSize), gridNumberPaint);
-            } else {
-                //GRID NUMBER FOR ROW
-                canvas.drawText(Integer.toString(x), cells[x][19].startX + (cellSize / 3), cells[x][19].endY + (cellSize), gridNumberPaint);
-
-            }
-        }
-
-        //GRID NUMBER FOR COLUMN
-        for (int x = 0; x < 20; x++) {
-
-            if (x > 9 && x < 20) {
-
-                canvas.drawText(Integer.toString(19 - x), cells[0][x].startX - (cellSize), cells[0][x].endY - (cellSize), gridNumberPaint);
-            } else {
-
-                canvas.drawText(Integer.toString(19 - x), cells[0][x].startX - (cellSize), cells[0][x].endY - (cellSize), gridNumberPaint);
-
-            }
-        }
     }
 
     //Draw out the 15x20 grid
@@ -174,11 +182,10 @@ public class MapView extends View {
 
         for (int x = 0; x < COLS; x++) {
             for (int y = 0; y < ROWS; y++) {
-                // Set margin to be 20
-                cells[x][y] = new Cell(x * cellSize + (cellSize / 20),
-                        y * cellSize + (cellSize / 20),
-                        (x + 1) * cellSize - (cellSize / 20),
-                        (y + 1) * cellSize - (cellSize / 20), unexploredPaint);
+                cells[x][y] = new Cell(x * cellSize + (cellSize / 30),
+                        y * cellSize + (cellSize / 30),
+                        (x + 1) * cellSize - (cellSize / 40),
+                        (y + 1) * cellSize - (cellSize / 60), unexploredPaint);
             }
         }
 
@@ -264,8 +271,9 @@ public class MapView extends View {
         int row = -1, cols = -1;
         //Get selected column index
         for (int i = 0; i < COLS; i++) {
-
-            if (cells[i][0].endX >= (x - 20) && cells[i][0].startX <= (x - 20)) {
+            Log.d(TAG, "End" + cells[i][0].endX + " , " + x);
+            Log.d(TAG, "Start" + cells[i][0].startX + " , " + x);
+            if (cells[i][0].endX >= (x - hMargin) && cells[i][0].startX <= (x - hMargin)) {
                 cols = i;
                 break;
             }
@@ -273,7 +281,7 @@ public class MapView extends View {
         //Get selected row index
         for (int j = 0; j < ROWS; j++) {
 
-            if (cells[0][j].endY >= (y - 20) && cells[0][j].startY <= (y - 20)) {
+            if (cells[0][j].endY >= (y - vMargin) && cells[0][j].startY <= (y - vMargin)) {
                 row = j;
                 break;
             }
