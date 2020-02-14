@@ -17,7 +17,6 @@ import java.nio.charset.Charset;
 
 public class MapView extends View {
 
-    public MainActivity mainActivityObj;
     private static final String TAG = "MazeView";
     private static Cell[][] cells;
     private static final int COLS = 15, ROWS = 20;
@@ -59,7 +58,7 @@ public class MapView extends View {
         unexploredPaint.setColor(Color.parseColor("#F5F5F5"));
 
         gridNumberPaint = new Paint();
-        gridNumberPaint.setColor(Color.BLACK);
+        gridNumberPaint.setColor(Color.WHITE);
         gridNumberPaint.setTextSize(18);
         gridNumberPaint.setTypeface(Typeface.DEFAULT);
 
@@ -73,6 +72,7 @@ public class MapView extends View {
         drawBorder(canvas);
         initCells();
         drawCell(canvas);
+        drawGridNumber(canvas);
         initRobot(canvas);
         drawRobotDirection(canvas);
         //initGoal(canvas);
@@ -165,6 +165,36 @@ public class MapView extends View {
         }
     }
 
+    //Draw grid number
+    private void drawGridNumber(Canvas canvas) {
+
+        for (int x = 0; x < 15; x++) {
+
+            if(x >9 && x <15){
+
+                canvas.drawText(Integer.toString(x), cells[x][19].startX + (cellSize / 5), cells[x][19].endY + (cellSize / 1.5f), gridNumberPaint);
+            }
+            else {
+                //GRID NUMBER FOR ROW
+                canvas.drawText(Integer.toString(x), cells[x][19].startX + (cellSize / 3), cells[x][19].endY + (cellSize / 1.5f), gridNumberPaint);
+
+            }
+        }
+
+        for (int x = 0; x <20; x++) {
+
+            if(x >9 && x <20){
+
+                canvas.drawText(Integer.toString(19 - x), cells[0][x].startX - (cellSize / 1.5f), cells[0][x].endY - (cellSize / 3.5f), gridNumberPaint);
+            }
+            else {
+
+                canvas.drawText(Integer.toString(19 - x), cells[0][x].startX - (cellSize / 1.2f), cells[0][x].endY - (cellSize / 3.5f), gridNumberPaint);
+
+            }
+        }
+    }
+
     private void initRobot(Canvas canvas) {
         canvas.drawRect(cells[robotCol][robotRow].startX, cells[robotCol][robotRow].startY, cells[robotCol][robotRow].endX, cells[robotCol][robotRow].endY, robotPaint);
         //top
@@ -188,17 +218,33 @@ public class MapView extends View {
     private void drawRobotDirection(Canvas canvas) {
         switch (robotDirection) {
             case "Down":
-                canvas.drawRect(cells[robotCol][robotRow + 1].startX, cells[robotCol][robotRow + 1].startY, cells[robotCol][robotRow + 1].endX, cells[robotCol][robotRow + 1].endY, directionPaint);
+                canvas.drawRect(cells[robotCol][robotRow + 1].startX,
+                        cells[robotCol][robotRow + 1].startY,
+                        cells[robotCol][robotRow + 1].endX,
+                        cells[robotCol][robotRow + 1].endY, directionPaint);
+
                 break;
             case "Left":
-                canvas.drawRect(cells[robotCol - 1][robotRow].startX, cells[robotCol - 1][robotRow].startY, cells[robotCol - 1][robotRow].endX, cells[robotCol - 1][robotRow].endY, directionPaint);
+                canvas.drawRect(cells[robotCol - 1][robotRow].startX,
+                                cells[robotCol - 1][robotRow].startY,
+                                cells[robotCol - 1][robotRow].endX,
+                                cells[robotCol - 1][robotRow].endY,
+                                directionPaint);
                 break;
             case "Right":
-                canvas.drawRect(cells[robotCol + 1][robotRow].startX, cells[robotCol + 1][robotRow].startY, cells[robotCol + 1][robotRow].endX, cells[robotCol + 1][robotRow].endY, directionPaint);
+                canvas.drawRect(cells[robotCol + 1][robotRow].startX,
+                                cells[robotCol + 1][robotRow].startY,
+                                cells[robotCol + 1][robotRow].endX,
+                                cells[robotCol + 1][robotRow].endY,
+                                directionPaint);
                 break;
             default:
-                canvas.drawRect(cells[robotCol][robotRow - 1].startX, cells[robotCol][robotRow - 1].startY, cells[robotCol][robotRow - 1].endX, cells[robotCol][robotRow - 1].endY, directionPaint);
-        }
+                canvas.drawRect(cells[robotCol][robotRow - 1].startX,
+                        cells[robotCol][robotRow - 1].startY,
+                        cells[robotCol][robotRow - 1].endX,
+                        cells[robotCol][robotRow - 1].endY,
+                        directionPaint);
+               }
     }
 
 
@@ -232,23 +278,25 @@ public class MapView extends View {
 
     public int[] getSelectedRowCol(float x, float y) {
         int row = -1, cols = -1;
+
         //Get selected column index
         for (int i = 0; i < COLS; i++) {
-            Log.d(TAG, "End" + cells[i][0].endX + " , " + x);
-            Log.d(TAG, "Start" + cells[i][0].startX + " , " + x);
             if (cells[i][0].endX >= (x - hMargin) && cells[i][0].startX <= (x - hMargin)) {
                 cols = i;
                 break;
             }
         }
-        //Get selected row index
-        for (int j = 0; j < ROWS; j++) {
 
+        int counter = 0;
+        //Get selected row index
+        for (int j = ROWS-1; j >= 0; j--) {
             if (cells[0][j].endY >= (y - vMargin) && cells[0][j].startY <= (y - vMargin)) {
-                row = j;
+                row = ROWS - counter -1;
                 break;
             }
+            counter++;
         }
+
         return new int[]{cols, row};
     }
 }
