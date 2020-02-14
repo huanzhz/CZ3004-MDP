@@ -151,7 +151,7 @@ tools:context=".tab1">
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtBTStatus" />
 
-            <Button
+            <ToggleButton
                 android:id="@+id/waypointbtn"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="80dp"
@@ -162,8 +162,9 @@ tools:context=".tab1">
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="16dp"
-                android:background="@drawable/bg_side_btn"
-                android:text="@string/btn_waypoint"
+                android:background="@drawable/bg_side_toggle"
+                android:textOn="@string/btn_waypoint_on"
+                android:textOff="@string/btn_waypoint_off"
                 android:theme="@style/SideBarLayout"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

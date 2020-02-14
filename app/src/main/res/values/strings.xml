@@ -24,7 +24,8 @@
     <string name="btn_start">Start</string>
     <string name="btn_explore">Explore</string>
     <string name="btn_reset">Reset</string>
-    <string name="btn_waypoint">Waypoint</string>
+    <string name="btn_waypoint_on">Waypoint On</string>
+    <string name="btn_waypoint_off">Waypoint Off</string>
     <string name="btn_btstatus">Bluetooth: Not-Connected</string>
     <string name="btn_robotstatus">Robot Status: N/A</string>
 
