@@ -14,14 +14,6 @@
         android:layout_height="match_parent">
 
         <Button
-            android:text="@string/enable_discoverable"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnDiscoverable_on_off"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"/>
-
-        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnFindUnpairedDevices"
@@ -29,18 +21,10 @@
 
         <ListView
             android:layout_marginTop="15dp"
-            android:layout_below="@+id/btnStartConnection"
+            android:layout_below="@+id/btnFindUnpairedDevices"
             android:layout_width="match_parent"
             android:layout_height="500dp"
             android:id="@+id/lvNewDevices"/>
-
-        <Button
-            android:layout_marginTop="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnFindUnpairedDevices"
-            android:id="@+id/btnStartConnection"
-            android:text="@string/start_connection"/>
 
     </RelativeLayout>
 

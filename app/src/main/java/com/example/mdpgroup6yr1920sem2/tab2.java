@@ -46,7 +46,6 @@ public class tab2 extends Fragment {
             // Inflate the layout for this fragment
             view = inflater.inflate(R.layout.fragment_tab1, container, false);
 
-            Button btnEnableDisable_Discoverable = (Button) view.findViewById(R.id.btnDiscoverable_on_off);
             Button btnDiscover = (Button) view.findViewById(R.id.btnFindUnpairedDevices);
 
             mainActivityObj.lvNewDevices = (ListView) view.findViewById(R.id.lvNewDevices);
@@ -73,6 +72,9 @@ public class tab2 extends Fragment {
                         mainActivityObj.mBTDevice = mainActivityObj.mBTDevices.get(position);
                         mainActivityObj.mBluetoothConnection = new BluetoothConnectionService(mainActivityObj);
                     }
+
+                    // Connecting to device
+                    mainActivityObj.startConnection();
                 }
             });
 
@@ -82,24 +84,6 @@ public class tab2 extends Fragment {
                 public void onClick(View view) {
                     //Log.d(TAG, "onClick: enabling/disabling bluetooth.");
                     mainActivityObj.btnDiscover();
-                }
-            });
-
-            btnEnableDisable_Discoverable.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //Log.d(TAG, "onClick: enabling/disabling bluetooth.");
-                    mainActivityObj.btnEnableDisableDiscoverable();
-                }
-            });
-
-            // Connection and Send Message
-            Button btnStartConnection = (Button) view.findViewById(R.id.btnStartConnection);
-
-            btnStartConnection.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mainActivityObj.startConnection();
                 }
             });
 

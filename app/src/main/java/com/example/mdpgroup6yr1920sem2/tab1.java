@@ -66,29 +66,37 @@ public class tab1 extends Fragment {
 
             upBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    byte[] bytes = ("f").getBytes(Charset.defaultCharset());
-                    mainActivityObj.mBluetoothConnection.write(bytes);
+                    if(mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("f").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
                 }
             });
 
             leftBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    byte[] bytes = ("tl").getBytes(Charset.defaultCharset());
-                    mainActivityObj.mBluetoothConnection.write(bytes);
+                    if(mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("tl").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
                 }
             });
 
             rightBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    byte[] bytes = ("tr").getBytes(Charset.defaultCharset());
-                    mainActivityObj.mBluetoothConnection.write(bytes);
+                    if(mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("tr").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
                 }
             });
 
             downBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    byte[] bytes = ("r").getBytes(Charset.defaultCharset());
-                    mainActivityObj.mBluetoothConnection.write(bytes);
+                    if(mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("r").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
                 }
             });
 
