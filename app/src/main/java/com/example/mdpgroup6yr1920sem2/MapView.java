@@ -13,14 +13,11 @@ import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 
+import java.nio.charset.Charset;
+
 public class MapView extends View {
 
-    //Controls for the robot
-    ImageButton upBtn;
-    ImageButton leftBtn;
-    ImageButton downBtn;
-    ImageButton rightBtn;
-
+    public MainActivity mainActivityObj;
     private static final String TAG = "MazeView";
     private static Cell[][] cells;
     private static final int COLS = 15, ROWS = 20;
@@ -72,7 +69,6 @@ public class MapView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        renderBtn();
         alignMap(canvas);
         drawBorder(canvas);
         initCells();
@@ -82,39 +78,6 @@ public class MapView extends View {
         //initGoal(canvas);
 
     }
-
-    private void renderBtn(){
-        upBtn = (ImageButton) findViewById(R.id.btnTop);
-        leftBtn = (ImageButton) findViewById(R.id.btnLeft);
-        rightBtn = (ImageButton) findViewById(R.id.btnRight);
-        downBtn = (ImageButton) findViewById(R.id.btnBottom);
-
-        /*upBtn.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                moveRobot("Up");
-            }
-        });
-
-        leftBtn.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                moveRobot("Up");
-            }
-        });
-
-        rightBtn.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                moveRobot("Up");
-            }
-        });
-
-        downBtn.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                moveRobot("Up");
-            }
-        });*/
-    }
-
-
 
     private void alignMap(Canvas canvas) {
         //Canvas Color
