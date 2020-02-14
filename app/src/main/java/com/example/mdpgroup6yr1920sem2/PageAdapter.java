@@ -8,9 +8,13 @@ import androidx.fragment.app.FragmentPagerAdapter;
 public class PageAdapter extends FragmentPagerAdapter {
 
     private int numberoftabs;
+    Fragment fragment1, fragment2, fragment3;
 
     public PageAdapter(@NonNull FragmentManager fm, int numberoftabs) {
         super(fm);
+        fragment1 = new tab1();
+        fragment2 = new tab2();
+        fragment3 = new tab3();
         this.numberoftabs = numberoftabs;
     }
 
@@ -19,13 +23,13 @@ public class PageAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch(position){
             case 0:
-                return new tab1();
+                return fragment1;
             case 1:
-                return new tab2();
+                return fragment2;
             case 2:
-                return new tab3();
+                return fragment3;
             default:
-                    return null;
+                return null;
 
         }
     }
