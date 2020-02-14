@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity{
 
     ListView lvNewDevices;
 
+    public static boolean wayPointChecked = false;
+
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
