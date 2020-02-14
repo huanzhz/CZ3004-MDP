@@ -17,7 +17,6 @@ import java.nio.charset.Charset;
 
 public class MapView extends View {
 
-    public MainActivity mainActivityObj;
     private static final String TAG = "MazeView";
     private static Cell[][] cells;
     private static final int COLS = 15, ROWS = 20;
@@ -59,7 +58,7 @@ public class MapView extends View {
         unexploredPaint.setColor(Color.parseColor("#F5F5F5"));
 
         gridNumberPaint = new Paint();
-        gridNumberPaint.setColor(Color.BLACK);
+        gridNumberPaint.setColor(Color.WHITE);
         gridNumberPaint.setTextSize(18);
         gridNumberPaint.setTypeface(Typeface.DEFAULT);
 
@@ -73,6 +72,7 @@ public class MapView extends View {
         drawBorder(canvas);
         initCells();
         drawCell(canvas);
+        drawGridNumber(canvas);
         initRobot(canvas);
         drawRobotDirection(canvas);
         //initGoal(canvas);
@@ -165,6 +165,36 @@ public class MapView extends View {
         }
     }
 
+    //Draw grid number
+    private void drawGridNumber(Canvas canvas) {
+
+        for (int x = 0; x < 15; x++) {
+
+            if(x >9 && x <15){
+
+                canvas.drawText(Integer.toString(x), cells[x][19].startX + (cellSize / 5), cells[x][19].endY + (cellSize / 1.5f), gridNumberPaint);
+            }
+            else {
+                //GRID NUMBER FOR ROW
+                canvas.drawText(Integer.toString(x), cells[x][19].startX + (cellSize / 3), cells[x][19].endY + (cellSize / 1.5f), gridNumberPaint);
+
+            }
+        }
+
+        for (int x = 0; x <20; x++) {
+
+            if(x >9 && x <20){
+
+                canvas.drawText(Integer.toString(19 - x), cells[0][x].startX - (cellSize / 1.5f), cells[0][x].endY - (cellSize / 3.5f), gridNumberPaint);
+            }
+            else {
+
+                canvas.drawText(Integer.toString(19 - x), cells[0][x].startX - (cellSize / 1.2f), cells[0][x].endY - (cellSize / 3.5f), gridNumberPaint);
+
+            }
+        }
+    }
+
     private void initRobot(Canvas canvas) {
         canvas.drawRect(cells[robotCol][robotRow].startX, cells[robotCol][robotRow].startY, cells[robotCol][robotRow].endX, cells[robotCol][robotRow].endY, robotPaint);
         //top
@@ -203,7 +233,7 @@ public class MapView extends View {
 
 
     //ON TOUCH METHOD
-    @Override
+   /* @Override
     public boolean onTouchEvent(MotionEvent event) {
         int coordinates[];
         float x = event.getX();
@@ -228,7 +258,7 @@ public class MapView extends View {
 
         Log.d(TAG, "Selected Column and Row" + coordinates[0] + " " + coordinates[1]);
         return super.onTouchEvent(event);
-    }
+    }*/
 
     public int[] getSelectedRowCol(float x, float y) {
         int row = -1, cols = -1;
