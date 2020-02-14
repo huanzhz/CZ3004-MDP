@@ -218,22 +218,38 @@ public class MapView extends View {
     private void drawRobotDirection(Canvas canvas) {
         switch (robotDirection) {
             case "Down":
-                canvas.drawRect(cells[robotCol][robotRow + 1].startX, cells[robotCol][robotRow + 1].startY, cells[robotCol][robotRow + 1].endX, cells[robotCol][robotRow + 1].endY, directionPaint);
+                canvas.drawRect(cells[robotCol][robotRow + 1].startX,
+                        cells[robotCol][robotRow + 1].startY,
+                        cells[robotCol][robotRow + 1].endX,
+                        cells[robotCol][robotRow + 1].endY, directionPaint);
+
                 break;
             case "Left":
-                canvas.drawRect(cells[robotCol - 1][robotRow].startX, cells[robotCol - 1][robotRow].startY, cells[robotCol - 1][robotRow].endX, cells[robotCol - 1][robotRow].endY, directionPaint);
+                canvas.drawRect(cells[robotCol - 1][robotRow].startX,
+                                cells[robotCol - 1][robotRow].startY,
+                                cells[robotCol - 1][robotRow].endX,
+                                cells[robotCol - 1][robotRow].endY,
+                                directionPaint);
                 break;
             case "Right":
-                canvas.drawRect(cells[robotCol + 1][robotRow].startX, cells[robotCol + 1][robotRow].startY, cells[robotCol + 1][robotRow].endX, cells[robotCol + 1][robotRow].endY, directionPaint);
+                canvas.drawRect(cells[robotCol + 1][robotRow].startX,
+                                cells[robotCol + 1][robotRow].startY,
+                                cells[robotCol + 1][robotRow].endX,
+                                cells[robotCol + 1][robotRow].endY,
+                                directionPaint);
                 break;
             default:
-                canvas.drawRect(cells[robotCol][robotRow - 1].startX, cells[robotCol][robotRow - 1].startY, cells[robotCol][robotRow - 1].endX, cells[robotCol][robotRow - 1].endY, directionPaint);
-        }
+                canvas.drawRect(cells[robotCol][robotRow - 1].startX,
+                        cells[robotCol][robotRow - 1].startY,
+                        cells[robotCol][robotRow - 1].endX,
+                        cells[robotCol][robotRow - 1].endY,
+                        directionPaint);
+               }
     }
 
 
     //ON TOUCH METHOD
-   /* @Override
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         int coordinates[];
         float x = event.getX();
@@ -258,27 +274,29 @@ public class MapView extends View {
 
         Log.d(TAG, "Selected Column and Row" + coordinates[0] + " " + coordinates[1]);
         return super.onTouchEvent(event);
-    }*/
+    }
 
     public int[] getSelectedRowCol(float x, float y) {
         int row = -1, cols = -1;
+
         //Get selected column index
         for (int i = 0; i < COLS; i++) {
-            Log.d(TAG, "End" + cells[i][0].endX + " , " + x);
-            Log.d(TAG, "Start" + cells[i][0].startX + " , " + x);
             if (cells[i][0].endX >= (x - hMargin) && cells[i][0].startX <= (x - hMargin)) {
                 cols = i;
                 break;
             }
         }
-        //Get selected row index
-        for (int j = 0; j < ROWS; j++) {
 
+        int counter = 0;
+        //Get selected row index
+        for (int j = ROWS-1; j >= 0; j--) {
             if (cells[0][j].endY >= (y - vMargin) && cells[0][j].startY <= (y - vMargin)) {
-                row = j;
+                row = ROWS - counter -1;
                 break;
             }
+            counter++;
         }
+
         return new int[]{cols, row};
     }
 }
