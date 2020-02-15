@@ -128,6 +128,8 @@ public class MainActivity extends AppCompatActivity{
         tab3 = (TabItem) findViewById(R.id.Tab3);
         viewPager = findViewById(R.id.viewpager);
 
+        messages = new StringBuilder();
+
         pageradapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageradapter);
 
@@ -231,5 +233,17 @@ public class MainActivity extends AppCompatActivity{
             //Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
         }
     }
+
+    // Broadcast Receiver function
+    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String text = intent.getStringExtra("theMessage");
+
+            messages.append(text + "\n");
+
+            ((tab3) pageradapter.fragment3).setIncomingText(messages);
+        }
+    };
 
 }

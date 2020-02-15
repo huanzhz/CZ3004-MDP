@@ -31,7 +31,7 @@ public class tab3 extends Fragment {
     }
 
     public MainActivity mainActivityObj;
-    TextView incomingMessages;
+    private TextView incomingMessages;
     private View view;
 
 
@@ -61,24 +61,15 @@ public class tab3 extends Fragment {
 
             // Receive Messages
             incomingMessages = (TextView) view.findViewById(R.id.incomingMessage);
-            mainActivityObj.messages = new StringBuilder();
-            LocalBroadcastManager.getInstance(mainActivityObj.getApplicationContext()).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
+            //mainActivityObj.messages = new StringBuilder();
+            LocalBroadcastManager.getInstance(mainActivityObj.getApplicationContext()).registerReceiver(mainActivityObj.mReceiver, new IntentFilter("incomingMessage"));
 
         }
         return view;
     }
 
-
-    // Broadcast Receiver function
-    BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String text = intent.getStringExtra("theMessage");
-
-            mainActivityObj.messages.append(text + "\n");
-
-            incomingMessages.setText(mainActivityObj.messages);
-        }
-    };
+    public void setIncomingText(StringBuilder yourText){
+        incomingMessages.setText(yourText);
+    }
 
 }
