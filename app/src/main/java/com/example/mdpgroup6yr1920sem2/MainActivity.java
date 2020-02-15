@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity{
+
+    public static final int RECONNECT_MAXIMUM_TIMES = 5;
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity{
 
 
     private static final String TAG = "MainActivity";
+    private int reconnectCount = 0;
 
     BluetoothAdapter mBluetoothAdapter;
     BluetoothConnectionService mBluetoothConnection;
@@ -95,7 +100,7 @@ public class MainActivity extends AppCompatActivity{
                     //inside BroadcastReceiver4
                     mBTDevice = mDevice;
                 }
-                //case2: creating a bone
+                //case2: creating a bond
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
                     //Log.d(TAG, "BroadcastReceiver: BOND_BONDING.");
                 }
@@ -107,10 +112,49 @@ public class MainActivity extends AppCompatActivity{
         }
     };
 
+    /**
+     * Broadcast Receiver for listing devices that are listen for disconnection
+     */
+    private BroadcastReceiver mBroadcastReceiver2 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if(BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                //Device has disconnected
+                //Log.d(TAG, "Device Disconnected");
+                //reconnect();
+
+                // reconnect to the device 5 times
+                if(reconnectCount < RECONNECT_MAXIMUM_TIMES) {
+                    // wait 3second before calling the reconnect function
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            reconnect();
+                        }
+                    }, 3000);
+                }
+            }
+        }
+    };
+
+    private void reconnect(){
+        startConnection();
+
+        if(mBluetoothConnection.getBluetoothState()){
+            reconnectCount = 0;
+        }else{
+            reconnectCount++;
+        }
+    }
+
+
     @Override
     protected void onDestroy() {
         //Log.d(TAG, "onDestroy: called.");
         super.onDestroy();
+        unregisterReceiver(mBroadcastReceiver2);
         unregisterReceiver(mBroadcastReceiver3);
         unregisterReceiver(mBroadcastReceiver4);
         //mBluetoothAdapter.cancelDiscovery();
@@ -168,6 +212,10 @@ public class MainActivity extends AppCompatActivity{
         //Broadcasts when bond state changes (ie:pairing)
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mBroadcastReceiver4, filter);
+
+        //Broadcast when disconnected
+        IntentFilter disconnectedDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        registerReceiver(mBroadcastReceiver2, disconnectedDevicesIntent);
 
     }
 
