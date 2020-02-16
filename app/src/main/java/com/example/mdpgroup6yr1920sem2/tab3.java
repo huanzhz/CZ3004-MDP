@@ -61,9 +61,6 @@ public class tab3 extends Fragment {
 
             // Receive Messages
             incomingMessages = (TextView) view.findViewById(R.id.incomingMessage);
-            //mainActivityObj.messages = new StringBuilder();
-            LocalBroadcastManager.getInstance(mainActivityObj.getApplicationContext()).registerReceiver(mainActivityObj.mReceiver, new IntentFilter("incomingMessage"));
-
         }
         return view;
     }

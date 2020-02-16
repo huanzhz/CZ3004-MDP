@@ -41,6 +41,7 @@ public class tab1 extends Fragment {
 
     public MainActivity mainActivityObj;
     private View view;
+    private TextView statusMessages;
 
     public tab1() {
         // Required empty public constructor
@@ -59,6 +60,8 @@ public class tab1 extends Fragment {
             rightBtn = (ImageButton) view.findViewById(R.id.btnRight);
             downBtn = (ImageButton) view.findViewById(R.id.btnBottom);
             waypointBtn = (ToggleButton) view.findViewById(R.id.waypointbtn);
+            // status Messages
+            statusMessages = (TextView) view.findViewById(R.id.txtRobotStatus);
 
             //Save switch state in shared preferences
             SharedPreferences pref = mainActivityObj.getSharedPreferences("waypointState", mainActivityObj.MODE_PRIVATE);
@@ -115,4 +118,9 @@ public class tab1 extends Fragment {
 
         return view;
     }
+
+    public void setIncomingText(String yourText){
+        statusMessages.setText(yourText);
+    }
+
 }

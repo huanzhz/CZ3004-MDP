@@ -2,6 +2,7 @@ package com.example.mdpgroup6yr1920sem2;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
@@ -23,6 +24,8 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -217,6 +220,9 @@ public class MainActivity extends AppCompatActivity{
         IntentFilter disconnectedDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         registerReceiver(mBroadcastReceiver2, disconnectedDevicesIntent);
 
+        // Set up broadcast for receiving message
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
+
     }
 
     //create method for starting connection
@@ -288,9 +294,21 @@ public class MainActivity extends AppCompatActivity{
         public void onReceive(Context context, Intent intent) {
             String text = intent.getStringExtra("theMessage");
 
-            messages.append(text + "\n");
-
-            ((tab3) pageradapter.fragment3).setIncomingText(messages);
+            if(text.contains("status")){
+                text = text.replace("\"status\"", "");
+                Log.d(TAG, text);
+                Pattern pattern = Pattern.compile("\"(.*?)\"");
+                Matcher matcher = pattern.matcher(text);
+                if (matcher.find())
+                {
+                    text = matcher.group();
+                    //messages.append(text + "\n");
+                    ((tab1) pageradapter.fragment1).setIncomingText(text);
+                }
+            }else{
+                messages.append(text + "\n");
+                ((tab3) pageradapter.fragment3).setIncomingText(messages);
+            }
         }
     };
 
