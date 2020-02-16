@@ -6,6 +6,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -30,6 +31,9 @@ import java.util.regex.Pattern;
 public class MainActivity extends AppCompatActivity{
 
     public static final int RECONNECT_MAXIMUM_TIMES = 5;
+    public static final String SHARED_PREFS = "sharedPrefs";
+    public static final String TEXT_F1 = "textF1";
+    public static final String TEXT_F2 = "textF2";
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -60,6 +64,8 @@ public class MainActivity extends AppCompatActivity{
     ListView lvNewDevices;
 
     public static boolean wayPointChecked = false;
+
+    Dialog myReconfigureDialog;
 
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
@@ -176,6 +182,8 @@ public class MainActivity extends AppCompatActivity{
         viewPager = findViewById(R.id.viewpager);
 
         messages = new StringBuilder();
+
+        myReconfigureDialog = new Dialog(this);
 
         pageradapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageradapter);
