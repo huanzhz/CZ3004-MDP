@@ -2,9 +2,11 @@ package com.example.mdpgroup6yr1920sem2;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -13,6 +15,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -21,8 +25,15 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity{
+
+    public static final int RECONNECT_MAXIMUM_TIMES = 5;
+    public static final String SHARED_PREFS = "sharedPrefs";
+    public static final String TEXT_F1 = "textF1";
+    public static final String TEXT_F2 = "textF2";
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -35,6 +46,7 @@ public class MainActivity extends AppCompatActivity{
 
 
     private static final String TAG = "MainActivity";
+    private int reconnectCount = 0;
 
     BluetoothAdapter mBluetoothAdapter;
     BluetoothConnectionService mBluetoothConnection;
@@ -51,75 +63,14 @@ public class MainActivity extends AppCompatActivity{
 
     ListView lvNewDevices;
 
+    public static boolean wayPointChecked = false;
+
+    Dialog myReconfigureDialog;
+
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
     }
-
-    // Create a BroadcastReceiver for ACTION_FOUND
-    private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            // When discovery finds a device
-            if (action.equals(mBluetoothAdapter.ACTION_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, mBluetoothAdapter.ERROR);
-
-                switch(state){
-                    case BluetoothAdapter.STATE_OFF:
-                        //Log.d(TAG, "onReceive: STATE OFF");
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_OFF:
-                        //Log.d(TAG, "mBroadcastReceiver1: STATE TURNING OFF");
-                        break;
-                    case BluetoothAdapter.STATE_ON:
-                        //Log.d(TAG, "mBroadcastReceiver1: STATE ON");
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_ON:
-                        //Log.d(TAG, "mBroadcastReceiver1: STATE TURNING ON");
-                        break;
-                }
-            }
-        }
-    };
-
-    /**
-     * Broadcast Receiver for changes made to bluetooth states such as:
-     * 1) Discoverability mode on/off or expire.
-     */
-    private final BroadcastReceiver mBroadcastReceiver2 = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if (action.equals(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
-
-                int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, BluetoothAdapter.ERROR);
-
-                switch (mode) {
-                    //Device is in Discoverable Mode
-                    case BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE:
-                        //Log.d(TAG, "mBroadcastReceiver2: Discoverability Enabled.");
-                        break;
-                    //Device not in discoverable mode
-                    case BluetoothAdapter.SCAN_MODE_CONNECTABLE:
-                        //Log.d(TAG, "mBroadcastReceiver2: Discoverability Disabled. Able to receive connections.");
-                        break;
-                    case BluetoothAdapter.SCAN_MODE_NONE:
-                        //Log.d(TAG, "mBroadcastReceiver2: Discoverability Disabled. Not able to receive connections.");
-                        Toast.makeText(getApplicationContext(), "mBroadcastReceiver2: Discoverability Disabled. Not able to receive connections.", Toast.LENGTH_LONG).show();
-                        break;
-                    case BluetoothAdapter.STATE_CONNECTING:
-                        //Log.d(TAG, "mBroadcastReceiver2: Connecting....");
-                        break;
-                    case BluetoothAdapter.STATE_CONNECTED:
-                        //Log.d(TAG, "mBroadcastReceiver2: Connected.");
-                        break;
-                }
-
-            }
-        }
-    };
 
     /**
      * Broadcast Receiver for listing devices that are not yet paired
@@ -158,7 +109,7 @@ public class MainActivity extends AppCompatActivity{
                     //inside BroadcastReceiver4
                     mBTDevice = mDevice;
                 }
-                //case2: creating a bone
+                //case2: creating a bond
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
                     //Log.d(TAG, "BroadcastReceiver: BOND_BONDING.");
                 }
@@ -170,11 +121,48 @@ public class MainActivity extends AppCompatActivity{
         }
     };
 
+    /**
+     * Broadcast Receiver for listing devices that are listen for disconnection
+     */
+    private BroadcastReceiver mBroadcastReceiver2 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if(BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                //Device has disconnected
+                //Log.d(TAG, "Device Disconnected");
+                //reconnect();
+
+                // reconnect to the device 5 times
+                if(reconnectCount < RECONNECT_MAXIMUM_TIMES) {
+                    // wait 3second before calling the reconnect function
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            reconnect();
+                        }
+                    }, 3000);
+                }
+            }
+        }
+    };
+
+    private void reconnect(){
+        startConnection();
+
+        if(mBluetoothConnection.getBluetoothState()){
+            reconnectCount = 0;
+        }else{
+            reconnectCount++;
+        }
+    }
+
+
     @Override
     protected void onDestroy() {
         //Log.d(TAG, "onDestroy: called.");
         super.onDestroy();
-        unregisterReceiver(mBroadcastReceiver1);
         unregisterReceiver(mBroadcastReceiver2);
         unregisterReceiver(mBroadcastReceiver3);
         unregisterReceiver(mBroadcastReceiver4);
@@ -192,6 +180,10 @@ public class MainActivity extends AppCompatActivity{
         tab2 = (TabItem) findViewById(R.id.Tab2);
         tab3 = (TabItem) findViewById(R.id.Tab3);
         viewPager = findViewById(R.id.viewpager);
+
+        messages = new StringBuilder();
+
+        myReconfigureDialog = new Dialog(this);
 
         pageradapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageradapter);
@@ -232,6 +224,13 @@ public class MainActivity extends AppCompatActivity{
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mBroadcastReceiver4, filter);
 
+        //Broadcast when disconnected
+        IntentFilter disconnectedDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        registerReceiver(mBroadcastReceiver2, disconnectedDevicesIntent);
+
+        // Set up broadcast for receiving message
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
+
     }
 
     //create method for starting connection
@@ -247,41 +246,6 @@ public class MainActivity extends AppCompatActivity{
         //Log.d(TAG, "startBTConnection: Initializing RFCOM Bluetooth Connection.");
 
         mBluetoothConnection.startClient(device,uuid);
-    }
-
-    public void enableDisableBT(){
-        if(mBluetoothAdapter == null){
-            //Log.d(TAG, "enableDisableBT: Does not have BT capabilities.");
-            Toast.makeText(getApplicationContext(), "enableDisableBT: Does not have BT capabilities.", Toast.LENGTH_LONG).show();
-        }
-        if(!mBluetoothAdapter.isEnabled()){
-            //Log.d(TAG, "enableDisableBT: enabling BT.");
-            Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivity(enableBTIntent);
-
-            IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(mBroadcastReceiver1, BTIntent);
-        }
-        if(mBluetoothAdapter.isEnabled()){
-            //Log.d(TAG, "enableDisableBT: disabling BT.");
-            mBluetoothAdapter.disable();
-
-            IntentFilter BTIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(mBroadcastReceiver1, BTIntent);
-        }
-
-    }
-
-    public void btnEnableDisableDiscoverable() {
-        //Log.d(TAG, "btnEnableDisableDiscoverable: Making device discoverable for 300 seconds.");
-
-        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-        startActivity(discoverableIntent);
-
-        IntentFilter intentFilter = new IntentFilter(mBluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-        registerReceiver(mBroadcastReceiver2,intentFilter);
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -331,5 +295,29 @@ public class MainActivity extends AppCompatActivity{
             //Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
         }
     }
+
+    // Broadcast Receiver function
+    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String text = intent.getStringExtra("theMessage");
+
+            if(text.contains("status")){
+                text = text.replace("\"status\"", "");
+                Log.d(TAG, text);
+                Pattern pattern = Pattern.compile("\"(.*?)\"");
+                Matcher matcher = pattern.matcher(text);
+                if (matcher.find())
+                {
+                    text = matcher.group();
+                    //messages.append(text + "\n");
+                    ((tab1) pageradapter.fragment1).setIncomingText(text);
+                }
+            }else{
+                messages.append(text + "\n");
+                ((tab3) pageradapter.fragment3).setIncomingText(messages);
+            }
+        }
+    };
 
 }

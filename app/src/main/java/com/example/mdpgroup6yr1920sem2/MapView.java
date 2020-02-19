@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ToggleButton;
 
 import androidx.annotation.Nullable;
 
@@ -17,14 +18,18 @@ import java.nio.charset.Charset;
 
 public class MapView extends View {
 
+    ToggleButton waypointBtn;
+
     private static final String TAG = "MazeView";
     private static Cell[][] cells;
     private static final int COLS = 15, ROWS = 20;
     private static final float WALL_THICKNESS = 2;
     private static float cellSize, hMargin, vMargin;
     private static int robotRow = 18, robotCol = 1;
+    private static int waypointX, waypointY;
     private static String robotDirection = "Top";
-    private Paint wallPaint, robotPaint, directionPaint, goalPaint, gridNumberPaint, unexploredPaint;
+
+    private Paint wallPaint, robotPaint, directionPaint, goalPaint, gridNumberPaint, waypointPaint, unexploredPaint;
 
     private class Cell {
         float startX, startY, endX, endY;
@@ -42,6 +47,7 @@ public class MapView extends View {
     public MapView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
+
         wallPaint = new Paint();
         wallPaint.setColor(Color.parseColor("#64B5F6"));
         wallPaint.setStrokeWidth(WALL_THICKNESS);
@@ -49,13 +55,14 @@ public class MapView extends View {
         robotPaint = new Paint();
         robotPaint.setColor(Color.parseColor("#1DE9B6"));
 
-        //COLOR FOR ROBOT DIRECTION
         directionPaint = new Paint();
         directionPaint.setColor(Color.parseColor("#FFD600"));
 
-        //COLOR FOR UNEXPLORED PATH
         unexploredPaint = new Paint();
         unexploredPaint.setColor(Color.parseColor("#F5F5F5"));
+
+        waypointPaint = new Paint();
+        waypointPaint.setColor(Color.parseColor("#FF6B6C"));
 
         gridNumberPaint = new Paint();
         gridNumberPaint.setColor(Color.WHITE);
@@ -74,6 +81,7 @@ public class MapView extends View {
         drawCell(canvas);
         drawGridNumber(canvas);
         initRobot(canvas);
+        initWaypoint(canvas);
         drawRobotDirection(canvas);
         //initGoal(canvas);
 
@@ -215,6 +223,10 @@ public class MapView extends View {
         canvas.drawRect(cells[robotCol + 1][robotRow + 1].startX, cells[robotCol + 1][robotRow + 1].startY, cells[robotCol + 1][robotRow + 1].endX, cells[robotCol + 1][robotRow + 1].endY, robotPaint);
     }
 
+    private void initWaypoint(Canvas canvas){
+        canvas.drawRect(cells[waypointX][waypointY].startX, cells[waypointX][waypointY].startY, cells[waypointX][waypointY].endX, cells[waypointX][waypointY].endY, waypointPaint);
+    }
+
     private void drawRobotDirection(Canvas canvas) {
         switch (robotDirection) {
             case "Down":
@@ -251,28 +263,32 @@ public class MapView extends View {
     //ON TOUCH METHOD
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
         int coordinates[];
         float x = event.getX();
         float y = event.getY();
-
-        //Log.d(TAG, x + " " + y);
         coordinates = getSelectedRowCol(x, y);
 
         int selectedCol = coordinates[0];
         int selectedRow = coordinates[1];
-
-        //Check to see within range
+        Log.d(TAG, "Start X: " + MainActivity.wayPointChecked);
         if (selectedRow >= 0 && selectedCol >= 0) {
             //Check to see if the selected box is not at the first or last row/cols
             if ((selectedCol != 0 && selectedCol != 14) && (selectedRow != 0 && selectedRow != 19)) {
-                robotCol = selectedCol;
-                robotRow = selectedRow;
-                //Recycle view
-                invalidate();
+               if(MainActivity.wayPointChecked){
+                    waypointX = selectedCol;
+                    waypointY = selectedRow;
+               }
+               else{
+                    robotCol = selectedCol;
+                    robotRow = selectedRow;
+               }
             }
         }
 
-        Log.d(TAG, "Selected Column and Row" + coordinates[0] + " " + coordinates[1]);
+        //Recycle view
+        invalidate();
+
         return super.onTouchEvent(event);
     }
 
