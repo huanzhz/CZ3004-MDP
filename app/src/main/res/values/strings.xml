@@ -1,12 +1,9 @@
 <resources>
     <string name="app_name">MdpGroup6yr1920sem2</string>
 
-    <string name="on_off">ON/OFF</string>
-    <string name="enable_discoverable">Enable Discoverable</string>
     <string name="discover">Discover</string>
-    <string name="start_connection">Start Connection</string>
     <string name="enter_text_here">Enter Text Here</string>
-    <string name="send">SEND</string>
+    <string name="send">Send</string>
     <string name="incoming_messages">Incoming Messages</string>
 
     <string name="tab_text1">Tab 1</string>
@@ -30,4 +27,15 @@
     <string name="btn_robotstatus">Robot Status: N/A</string>
 
     <string name="hello_blank_fragment3">Hello blank fragment3</string>
+    <string name="btn_f1">F1 btn</string>
+    <string name="btn_f2">F2 btn</string>
+    <string name="btn_reconfigure">Reconfigure</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="textView_F1Old">ABCDEF</string>
+    <string name="enter_text_hereF1">Enter new F1 text Here</string>
+    <string name="textView_F2Old">ABCDEF</string>
+    <string name="enter_text_hereF2">Enter new F2 text Here</string>
+
+
 </resources>

@@ -38,6 +38,7 @@ public class BluetoothConnectionService {
     ProgressDialog mProgressDialog;
 
     private ConnectedThread mConnectedThread;
+    private Boolean bluetoothState = false;
 
     public BluetoothConnectionService(Context context) {
         mContext = context;
@@ -45,6 +46,9 @@ public class BluetoothConnectionService {
         start();
     }
 
+    public Boolean getBluetoothState() {
+        return bluetoothState;
+    }
 
     /**
      * This thread runs while listening for incoming connections. It behaves
@@ -276,6 +280,9 @@ public class BluetoothConnectionService {
                     Message msg = new Message();
                     msg.obj = "Disconnected";
                     handler.sendMessage(msg);
+
+                    // Set bluetooth to false
+                    bluetoothState = false;
                     break;
                 }
             }
@@ -283,12 +290,15 @@ public class BluetoothConnectionService {
 
         //Call this from the main activity to send data to the remote device
         public void write(byte[] bytes) {
-            String text = new String(bytes, Charset.defaultCharset());
-            //Log.d(TAG, "write: Writing to outputstream: " + text);
-            try {
-                mmOutStream.write(bytes);
-            } catch (IOException e) {
-                Log.e(TAG, "write: Error writing to output stream. " + e.getMessage() );
+            // if bluetooth is connected
+            if(bluetoothState) {
+                String text = new String(bytes, Charset.defaultCharset());
+                //Log.d(TAG, "write: Writing to outputstream: " + text);
+                try {
+                    mmOutStream.write(bytes);
+                } catch (IOException e) {
+                    Log.e(TAG, "write: Error writing to output stream. " + e.getMessage());
+                }
             }
         }
 
@@ -307,6 +317,9 @@ public class BluetoothConnectionService {
         Message msg = new Message();
         msg.obj = "Connected";
         handler.sendMessage(msg);
+
+        // Set bluetooth to true
+        bluetoothState = true;
 
         // Start the thread to manage the connection and perform transmissions
         mConnectedThread = new ConnectedThread(mmSocket);
