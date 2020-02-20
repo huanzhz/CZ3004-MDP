@@ -1,28 +1,16 @@
 package com.example.mdpgroup6yr1920sem2;
 
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.Build;
+import android.nfc.Tag;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ToggleButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +20,7 @@ import java.nio.charset.Charset;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class tab1 extends Fragment {
+public class tab1 extends Fragment  {
     ImageButton upBtn;
     ImageButton leftBtn;
     ImageButton downBtn;
@@ -118,6 +106,26 @@ public class tab1 extends Fragment {
                     Toast.makeText(getContext(), "Waypoint button pressed!", Toast.LENGTH_SHORT).show();
                 }
             });
+
+            //noinspection AndroidLintClickableViewAccessibility
+            mapView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    float x = event.getX();
+                    float y = event.getY();
+                    int[] info = mapView.setWaypointOrRobot(x, y);
+                    int col = info[0];
+                    int row = info[1];
+                    int isWaypoint = info[2];
+                    if (isWaypoint == 1) {
+                        sendWaypointCoordinates(col, row);
+
+                    } else {
+                        sendRobotCoordinates(col, row);
+                    }
+                    return true;
+                }
+            });
         }
 
         return view;
@@ -133,7 +141,7 @@ public class tab1 extends Fragment {
 
     public void sendWaypointCoordinates(int col, int row) {
         if (mainActivityObj.mBluetoothConnection != null) {
-            String waypointMessage = "Waypoint at (" + col + "," + row  + ")";
+            String waypointMessage = "Waypoint at (" + col + "," + row + ")";
             byte[] bytes = waypointMessage.getBytes(Charset.defaultCharset());
             mainActivityObj.mBluetoothConnection.write(bytes);
         }
@@ -141,7 +149,7 @@ public class tab1 extends Fragment {
 
     public void sendRobotCoordinates(int col, int row) {
         if (mainActivityObj.mBluetoothConnection != null) {
-            String robotMessage = "Robot at (" + col + "," + row  + ")";
+            String robotMessage = "Robot at (" + col + "," + row + ")";
             byte[] bytes = robotMessage.getBytes(Charset.defaultCharset());
             mainActivityObj.mBluetoothConnection.write(bytes);
         }

@@ -7,23 +7,11 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ToggleButton;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.material.tabs.TabItem;
-
-import java.nio.charset.Charset;
-
 public class MapView extends View {
-
-    ToggleButton waypointBtn;
-
-    private TabItem tab1;
-    public PageAdapter pageradapter;
 
     private static final String TAG = "MazeView";
     private static String MAP_POSITIONS = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
@@ -85,7 +73,7 @@ public class MapView extends View {
         startPaint.setColor(Color.parseColor("#B6DCFE"));
 
         goalPaint = new Paint();
-        goalPaint.setColor(Color.parseColor("#FFA5A5"));
+        goalPaint.setColor(Color.parseColor("#6EF9F5"));
 
         obstaclePaint = new Paint();
         obstaclePaint.setColor(Color.parseColor("#B6DCFE"));
@@ -290,40 +278,30 @@ public class MapView extends View {
         }
     }
 
-
-    //ON TOUCH METHOD
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public int[] setWaypointOrRobot(float x, float y) {
         int coordinates[];
-        float x = event.getX();
-        float y = event.getY();
+        int isWaypoint = 0;
+        Log.d(TAG, "X " + x + " " + "y " + y);
         coordinates = getSelectedRowCol(x, y);
-
         int selectedCol = coordinates[0];
         int selectedRow = coordinates[1];
-
-        tab1 = (TabItem) findViewById(R.id.Tab1);
-
-        Log.d(TAG, "Start X: " + MainActivity.wayPointChecked);
+        Log.d(TAG, "selectedCol " + selectedCol+ " " + "selectedRow " + selectedRow);
         if (selectedRow >= 0 && selectedCol >= 0) {
             //Check to see if the selected box is not at the first or last row/cols
             if ((selectedCol != 0 && selectedCol != 14) && (selectedRow != 0 && selectedRow != 19)) {
                 if (MainActivity.wayPointChecked) {
                     waypointX = selectedCol;
                     waypointY = selectedRow;
-                    ((tab1) pageradapter.fragment1).sendWaypointCoordinates(selectedCol, selectedRow);
+                    isWaypoint = 1;
                 } else {
                     robotCol = selectedCol;
                     robotRow = selectedRow;
-                    ((tab1) pageradapter.fragment1).sendRobotCoordinates(selectedCol, selectedRow);
                 }
             }
         }
-
         //Recycle view
         invalidate();
-
-        return super.onTouchEvent(event);
+        return new int[]{selectedCol, selectedRow, isWaypoint};
     }
 
     public int[] getSelectedRowCol(float x, float y) {
@@ -388,7 +366,7 @@ public class MapView extends View {
                     canvas.drawRect(cells[k][j].startX, cells[k][j].startY, cells[k][j].endX, cells[k][j].endY, obstaclePaint);
                 }
                 counter++;
-                Log.d(TAG, "Counter:" + counter);
+                //Log.d(TAG, "Counter:" + counter);
             }
         }
     }
