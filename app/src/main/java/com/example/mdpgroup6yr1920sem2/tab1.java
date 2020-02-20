@@ -3,6 +3,7 @@ package com.example.mdpgroup6yr1920sem2;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,7 +22,7 @@ import java.nio.charset.Charset;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class tab1 extends Fragment  {
+public class tab1 extends Fragment {
     ImageButton upBtn;
     ImageButton leftBtn;
     ImageButton downBtn;
@@ -44,6 +45,8 @@ public class tab1 extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (view == null) {
+            thread.start();
+
             // Inflate the layout for this fragment
             mainActivityObj = (MainActivity) getActivity();
 
@@ -101,11 +104,18 @@ public class tab1 extends Fragment  {
             autoManualSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
+                        if (mainActivityObj.mBluetoothConnection != null) {
+                            thread.start();
+                        }
                         autoManualSwitch.setTextSize(14);
                         autoManualSwitch.setText("Auto");
                         updateBtn.setVisibility(View.GONE);
-                        Log.d(TAG, "Do smt");
+
+
                     } else {
+                        if (mainActivityObj.mBluetoothConnection != null) {
+                            thread.interrupt();
+                        }
                         autoManualSwitch.setTextSize(12);
                         autoManualSwitch.setText("Manual");
                         updateBtn.setVisibility(View.VISIBLE);
@@ -117,9 +127,10 @@ public class tab1 extends Fragment  {
                 @Override
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
+                        //Call the function once to fetch
+                        fetchMapCoordinates();
                         Toast.makeText(getContext(), "Fetching Map Info!", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
+                    } else {
                         Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -185,4 +196,33 @@ public class tab1 extends Fragment  {
             mainActivityObj.mBluetoothConnection.write(bytes);
         }
     }
+
+    public void fetchMapCoordinates (){
+        // Send the string "sendArena" to AMDTool
+        if (mainActivityObj.mBluetoothConnection != null) {
+            byte[] bytes = ("sendArena").getBytes(Charset.defaultCharset());
+            mainActivityObj.mBluetoothConnection.write(bytes);
+        }
+    }
+
+    Thread thread = new Thread() {
+        @Override
+        public void run() {
+            while(!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(500);
+                    mainActivityObj.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            fetchMapCoordinates();
+                            //Log.d(TAG, "Worked!");
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    //End the loop on interruption
+                    break;
+                }
+            }
+        }
+    };
 }
