@@ -1,7 +1,5 @@
 package com.example.mdpgroup6yr1920sem2;
 
-import android.content.SharedPreferences;
-import android.nfc.Tag;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,8 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ToggleButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.CompoundButton;
 import android.util.Log;
 
 import java.nio.charset.Charset;
@@ -26,8 +26,10 @@ public class tab1 extends Fragment  {
     ImageButton leftBtn;
     ImageButton downBtn;
     ImageButton rightBtn;
+    ImageButton updateBtn;
     ToggleButton waypointBtn;
     MapView mapView;
+    Switch autoManualSwitch;
 
     private static final String TAG = "Tab1";
     public MainActivity mainActivityObj;
@@ -53,13 +55,12 @@ public class tab1 extends Fragment  {
             leftBtn = (ImageButton) view.findViewById(R.id.btnLeft);
             rightBtn = (ImageButton) view.findViewById(R.id.btnRight);
             downBtn = (ImageButton) view.findViewById(R.id.btnBottom);
+            updateBtn = (ImageButton) view.findViewById(R.id.btnUpdateMap);
             waypointBtn = (ToggleButton) view.findViewById(R.id.waypointbtn);
+            autoManualSwitch = (Switch) view.findViewById(R.id.autoSwitch);
+
             // status Messages
             statusMessages = (TextView) view.findViewById(R.id.txtRobotStatus);
-
-            //Save switch state in shared preferences
-            SharedPreferences pref = mainActivityObj.getSharedPreferences("waypointState", mainActivityObj.MODE_PRIVATE);
-            waypointBtn.setChecked(pref.getBoolean("value", waypointBtn.isChecked()));
 
             upBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -97,6 +98,33 @@ public class tab1 extends Fragment  {
                 }
             });
 
+            autoManualSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        autoManualSwitch.setTextSize(14);
+                        autoManualSwitch.setText("Auto");
+                        updateBtn.setVisibility(View.GONE);
+                        Log.d(TAG, "Do smt");
+                    } else {
+                        autoManualSwitch.setTextSize(12);
+                        autoManualSwitch.setText("Manual");
+                        updateBtn.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
+            updateBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
+                        Toast.makeText(getContext(), "Fetching Map Info!", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
             waypointBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -121,7 +149,6 @@ public class tab1 extends Fragment  {
                     int row = 19 - info[1];
                     int isWaypoint = info[2];
                     if (isWaypoint == 1) {
-                        Log.d(TAG, "a:" + isWaypoint);
                         sendWaypointCoordinates(col, row);
 
                     } else {
