@@ -73,7 +73,7 @@ public class tab1 extends Fragment {
 
             upBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    if(mainActivityObj.mBluetoothConnection != null) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
                         byte[] bytes = ("f").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     }
@@ -82,7 +82,7 @@ public class tab1 extends Fragment {
 
             leftBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    if(mainActivityObj.mBluetoothConnection != null) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
                         byte[] bytes = ("tl").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     }
@@ -91,7 +91,7 @@ public class tab1 extends Fragment {
 
             rightBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    if(mainActivityObj.mBluetoothConnection != null) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
                         byte[] bytes = ("tr").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     }
@@ -100,7 +100,7 @@ public class tab1 extends Fragment {
 
             downBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    if(mainActivityObj.mBluetoothConnection != null) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
                         byte[] bytes = ("r").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     }
@@ -123,11 +123,27 @@ public class tab1 extends Fragment {
         return view;
     }
 
-    public void setIncomingText(String yourText){
+    public void setIncomingText(String yourText) {
         statusMessages.setText(yourText);
     }
 
-    public void setMapObstacles(String hexString){
+    public void setMapObstacles(String hexString) {
         mapView.setGridMap(hexString);
+    }
+
+    public void sendWaypointCoordinates(int col, int row) {
+        if (mainActivityObj.mBluetoothConnection != null) {
+            String waypointMessage = "Waypoint at (" + col + "," + row  + ")";
+            byte[] bytes = waypointMessage.getBytes(Charset.defaultCharset());
+            mainActivityObj.mBluetoothConnection.write(bytes);
+        }
+    }
+
+    public void sendRobotCoordinates(int col, int row) {
+        if (mainActivityObj.mBluetoothConnection != null) {
+            String robotMessage = "Robot at (" + col + "," + row  + ")";
+            byte[] bytes = robotMessage.getBytes(Charset.defaultCharset());
+            mainActivityObj.mBluetoothConnection.write(bytes);
+        }
     }
 }
