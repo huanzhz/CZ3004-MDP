@@ -138,4 +138,12 @@ public class tab1 extends Fragment {
             mainActivityObj.mBluetoothConnection.write(bytes);
         }
     }
+
+    public void sendRobotCoordinates(int col, int row) {
+        if (mainActivityObj.mBluetoothConnection != null) {
+            String robotMessage = "Robot at (" + col + "," + row  + ")";
+            byte[] bytes = robotMessage.getBytes(Charset.defaultCharset());
+            mainActivityObj.mBluetoothConnection.write(bytes);
+        }
+    }
 }

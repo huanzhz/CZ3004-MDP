@@ -303,7 +303,6 @@ public class MapView extends View {
         int selectedRow = coordinates[1];
 
         tab1 = (TabItem) findViewById(R.id.Tab1);
-        ((tab1) pageradapter.fragment1).sendWaypointCoordinates(selectedCol, selectedRow);
 
         Log.d(TAG, "Start X: " + MainActivity.wayPointChecked);
         if (selectedRow >= 0 && selectedCol >= 0) {
@@ -312,9 +311,11 @@ public class MapView extends View {
                 if (MainActivity.wayPointChecked) {
                     waypointX = selectedCol;
                     waypointY = selectedRow;
+                    ((tab1) pageradapter.fragment1).sendWaypointCoordinates(selectedCol, selectedRow);
                 } else {
                     robotCol = selectedCol;
                     robotRow = selectedRow;
+                    ((tab1) pageradapter.fragment1).sendRobotCoordinates(selectedCol, selectedRow);
                 }
             }
         }
