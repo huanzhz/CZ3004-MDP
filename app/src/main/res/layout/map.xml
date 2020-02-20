@@ -10,7 +10,7 @@ android:background="@color/colorBlue"
 tools:context=".tab1">
 
     <view
-        android:id="@+id/view"
+        android:id="@+id/idMapView"
         class="com.example.mdpgroup6yr1920sem2.MapView"
         android:layout_width="450dp"
         android:layout_height="550dp"

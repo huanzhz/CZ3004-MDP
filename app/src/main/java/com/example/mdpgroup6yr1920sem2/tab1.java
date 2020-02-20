@@ -38,6 +38,7 @@ public class tab1 extends Fragment {
     ImageButton downBtn;
     ImageButton rightBtn;
     ToggleButton waypointBtn;
+    MapView mapView;
 
     public MainActivity mainActivityObj;
     private View view;
@@ -55,6 +56,9 @@ public class tab1 extends Fragment {
             mainActivityObj = (MainActivity) getActivity();
 
             view = inflater.inflate(R.layout.map, container, false);
+
+            mapView = (MapView) view.findViewById(R.id.idMapView);
+
             upBtn = (ImageButton) view.findViewById(R.id.btnTop);
             leftBtn = (ImageButton) view.findViewById(R.id.btnLeft);
             rightBtn = (ImageButton) view.findViewById(R.id.btnRight);
@@ -123,4 +127,7 @@ public class tab1 extends Fragment {
         statusMessages.setText(yourText);
     }
 
+    public void setMapObstacles(String hexString){
+        mapView.setGridMap(hexString);
+    }
 }
