@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.ToggleButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
 
 import java.nio.charset.Charset;
 
@@ -28,6 +29,7 @@ public class tab1 extends Fragment  {
     ToggleButton waypointBtn;
     MapView mapView;
 
+    private static final String TAG = "Tab1";
     public MainActivity mainActivityObj;
     private View view;
     private TextView statusMessages;
@@ -115,9 +117,11 @@ public class tab1 extends Fragment  {
                     float y = event.getY();
                     int[] info = mapView.setWaypointOrRobot(x, y);
                     int col = info[0];
-                    int row = info[1];
+                    //Flip the row
+                    int row = 19 - info[1];
                     int isWaypoint = info[2];
                     if (isWaypoint == 1) {
+                        Log.d(TAG, "a:" + isWaypoint);
                         sendWaypointCoordinates(col, row);
 
                     } else {
