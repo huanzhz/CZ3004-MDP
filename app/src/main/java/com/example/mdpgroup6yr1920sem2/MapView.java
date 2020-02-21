@@ -24,8 +24,11 @@ public class MapView extends View {
     private static int robotRow = 18, robotCol = 1;
     private static int waypointX, waypointY;
     private static String robotDirection = "Top";
+    private static boolean loadNumberID = false;
+    private static String[] mapNumberIDString;
+    public static Canvas mapCanvas;
 
-    private Paint wallPaint, robotPaint, directionPaint, startPaint, goalPaint, gridNumberPaint, waypointPaint, obstaclePaint, unexploredPaint;
+    private Paint wallPaint, robotPaint, directionPaint, startPaint, goalPaint, gridNumberPaint, waypointPaint, obstaclePaint, unexploredPaint, numberIDPaint;
 
     private class Cell {
         float startX, startY, endX, endY;
@@ -77,20 +80,27 @@ public class MapView extends View {
 
         obstaclePaint = new Paint();
         obstaclePaint.setColor(Color.parseColor("#B6DCFE"));
+
+        numberIDPaint = new Paint();
+        numberIDPaint.setColor(Color.parseColor("#B6DCFE"));
+
+
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        alignMap(canvas);
-        drawBorder(canvas);
+        mapCanvas = canvas;
+        alignMap(mapCanvas);
+        drawBorder(mapCanvas);
         initCells();
-        drawCell(canvas);
-        drawGridNumber(canvas);
-        drawStartEnd(canvas);
-        initRobot(canvas);
-        initWaypoint(canvas);
-        initObstacles(canvas, MAP_POSITIONS);
-        drawRobotDirection(canvas);
+        drawCell(mapCanvas);
+        drawGridNumber(mapCanvas);
+        drawStartEnd(mapCanvas);
+        initRobot(mapCanvas);
+        initWaypoint(mapCanvas);
+        initObstacles(mapCanvas, MAP_POSITIONS);
+        drawRobotDirection(mapCanvas);
+        drawNumberID(mapCanvas);
         //initGoal(canvas);
 
     }
@@ -285,7 +295,7 @@ public class MapView extends View {
         coordinates = getSelectedRowCol(x, y);
         int selectedCol = coordinates[0];
         int selectedRow = coordinates[1];
-        Log.d(TAG, "selectedCol " + selectedCol+ " " + "selectedRow " + selectedRow);
+        Log.d(TAG, "selectedCol " + selectedCol + " " + "selectedRow " + selectedRow);
         if (selectedRow >= 0 && selectedCol >= 0) {
             //Check to see if the selected box is not at the first or last row/cols
             if ((selectedCol != 0 && selectedCol != 14) && (selectedRow != 0 && selectedRow != 19)) {
@@ -369,5 +379,23 @@ public class MapView extends View {
                 //Log.d(TAG, "Counter:" + counter);
             }
         }
+    }
+
+    public void drawNumberID(Canvas canvas) {
+        if (loadNumberID) {
+            int x = Integer.parseInt(mapNumberIDString[0]);
+            int y = Math.abs(Integer.parseInt(mapNumberIDString[1]) - 19);
+            int numberID = Integer.parseInt(mapNumberIDString[2]);
+            String direction = mapNumberIDString[3];
+            canvas.drawRect(cells[x][y].startX, cells[x][y].startY, cells[x][y].endX, cells[x][y].endY, numberIDPaint);
+        }
+    }
+
+
+    public void initNumberID(String[] numberIDString) {
+        mapNumberIDString = numberIDString;
+        loadNumberID = true;
+        invalidate();
+
     }
 }

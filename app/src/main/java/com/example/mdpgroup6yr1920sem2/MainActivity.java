@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else if (text.contains("grid")) {
                 text = text.replace("\"grid\"", "");
-                Log.d(TAG, text);
+                //Log.d(TAG, text);
                 Pattern pattern = Pattern.compile("\"(.*?)\"");
                 Matcher matcher = pattern.matcher(text);
                 if (matcher.find()) {
@@ -324,7 +324,20 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, text);
                     ((tab1) pageradapter.fragment1).setMapObstacles(text);
                 }
-            } else {
+            }
+            else if(text.contains("sendNumberID")){
+                //example {"sendNumberID":("x, y, NumberID, direction")}
+                text = text.replace("\"sendNumberID\"", "");
+                Pattern pattern = Pattern.compile("\"(.*?)\"");
+                Matcher matcher = pattern.matcher(text);
+                if (matcher.find()) {
+                    text = matcher.group();
+                    text = text.replace("\"", "");
+                    Log.d(TAG, text);
+                    ((tab1) pageradapter.fragment1).displayNumberID(text);
+                }
+            }
+            else {
                 messages.append(text + "\n");
                 ((tab3) pageradapter.fragment3).setIncomingText(messages);
             }

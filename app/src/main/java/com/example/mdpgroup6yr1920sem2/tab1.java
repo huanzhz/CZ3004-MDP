@@ -205,6 +205,13 @@ public class tab1 extends Fragment {
         }
     }
 
+    public void displayNumberID(String numberIDString){
+        // 1. x 2. y 3. numberID 4. direction
+        numberIDString = numberIDString.trim();
+        String[] numberArr = numberIDString.split(",");
+        mapView.initNumberID(numberArr);
+    }
+
     Thread thread = new Thread() {
         @Override
         public void run() {
