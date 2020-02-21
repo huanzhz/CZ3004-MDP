@@ -45,7 +45,6 @@ public class tab1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (view == null) {
-            thread.start();
 
             // Inflate the layout for this fragment
             mainActivityObj = (MainActivity) getActivity();
@@ -61,6 +60,7 @@ public class tab1 extends Fragment {
             updateBtn = (ImageButton) view.findViewById(R.id.btnUpdateMap);
             waypointBtn = (ToggleButton) view.findViewById(R.id.waypointbtn);
             autoManualSwitch = (Switch) view.findViewById(R.id.autoSwitch);
+            autoManualSwitch.setChecked(false);
 
             // status Messages
             statusMessages = (TextView) view.findViewById(R.id.txtRobotStatus);
@@ -165,7 +165,7 @@ public class tab1 extends Fragment {
                     } else {
                         sendRobotCoordinates(col, row);
                     }
-                    return true;
+                    return false;
                 }
             });
         }
@@ -197,7 +197,7 @@ public class tab1 extends Fragment {
         }
     }
 
-    public void fetchMapCoordinates (){
+    public void fetchMapCoordinates() {
         // Send the string "sendArena" to AMDTool
         if (mainActivityObj.mBluetoothConnection != null) {
             byte[] bytes = ("sendArena").getBytes(Charset.defaultCharset());
