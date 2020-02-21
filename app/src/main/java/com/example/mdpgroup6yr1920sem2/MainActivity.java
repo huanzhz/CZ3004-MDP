@@ -1,6 +1,5 @@
 package com.example.mdpgroup6yr1920sem2;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -14,13 +13,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
-
+import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 
@@ -38,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private Toolbar bluetoothToolBar;
+    private TextView bluetoothToolBarText;
+
     private int[] tabIcons = {
             R.drawable.tab_map,
             R.drawable.tab_bluetooth
@@ -173,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.tabs);
 
         // For tablayout
         tabLayout = (TabLayout) findViewById(R.id.tablayout);
@@ -181,6 +185,10 @@ public class MainActivity extends AppCompatActivity {
         tab2 = (TabItem) findViewById(R.id.Tab2);
         tab3 = (TabItem) findViewById(R.id.Tab3);
         viewPager = findViewById(R.id.viewpager);
+
+        // For bluetooth status bar
+        bluetoothToolBar = (Toolbar) findViewById(R.id.btToolbar);
+        bluetoothToolBarText = (TextView) findViewById(R.id.bluetoothTextView);
 
         messages = new StringBuilder();
 
@@ -245,8 +253,20 @@ public class MainActivity extends AppCompatActivity {
      */
     public void startBTConnection(BluetoothDevice device, UUID uuid) {
         //Log.d(TAG, "startBTConnection: Initializing RFCOM Bluetooth Connection.");
-
         mBluetoothConnection.startClient(device, uuid);
+    }
+
+
+    //Added the UI for Bluetooth
+    //Call it in the BluetoothConnectionService to display
+    public void showBluetoothConnected(){
+        bluetoothToolBar.setBackgroundColor(Color.parseColor("#2196F3"));
+        bluetoothToolBarText.setText("Bluetooth: Connected");
+    }
+
+    public void showBluetoothDisconnected(){
+        bluetoothToolBar.setBackgroundColor(Color.parseColor("#6C6D6D"));
+        bluetoothToolBarText.setText("Bluetooth: Not Connected");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

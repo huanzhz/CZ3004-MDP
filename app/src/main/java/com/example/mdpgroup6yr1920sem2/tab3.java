@@ -8,7 +8,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import android.widget.Toast;
 import java.nio.charset.Charset;
 
 import static android.content.Context.MODE_PRIVATE;
-import static androidx.constraintlayout.widget.Constraints.TAG;
 import static com.example.mdpgroup6yr1920sem2.MainActivity.SHARED_PREFS;
 import static com.example.mdpgroup6yr1920sem2.MainActivity.TEXT_F1;
 import static com.example.mdpgroup6yr1920sem2.MainActivity.TEXT_F2;
@@ -55,7 +53,7 @@ public class tab3 extends Fragment {
             // get the main activity from MainActivity class
             mainActivityObj = (MainActivity) getActivity();
 
-            view = inflater.inflate(R.layout.fragment_tab3, container, false);
+            view = inflater.inflate(R.layout.communication, container, false);
 
             // Send button
             Button btnSend = (Button) view.findViewById(R.id.btnSend);

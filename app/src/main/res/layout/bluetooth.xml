@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp"
     android:paddingTop="16dp"
+    android:paddingRight="16dp"
     android:paddingBottom="16dp"
     tools:context=".tab1">
 
@@ -14,17 +14,17 @@
         android:layout_height="match_parent">
 
         <Button
+            android:id="@+id/btnFindUnpairedDevices"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/btnFindUnpairedDevices"
             android:text="@string/discover" />
 
         <ListView
-            android:layout_marginTop="15dp"
-            android:layout_below="@+id/btnFindUnpairedDevices"
+            android:id="@+id/lvNewDevices"
             android:layout_width="match_parent"
             android:layout_height="500dp"
-            android:id="@+id/lvNewDevices"/>
+            android:layout_below="@+id/btnFindUnpairedDevices"
+            android:layout_marginTop="15dp" />
 
     </RelativeLayout>
 

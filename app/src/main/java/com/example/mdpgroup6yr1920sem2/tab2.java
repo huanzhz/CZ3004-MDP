@@ -12,13 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import java.nio.charset.Charset;
-
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 /**
@@ -44,7 +39,7 @@ public class tab2 extends Fragment {
             mainActivityObj = (MainActivity) getActivity();
 
             // Inflate the layout for this fragment
-            view = inflater.inflate(R.layout.fragment_tab1, container, false);
+            view = inflater.inflate(R.layout.bluetooth, container, false);
 
             Button btnDiscover = (Button) view.findViewById(R.id.btnFindUnpairedDevices);
 

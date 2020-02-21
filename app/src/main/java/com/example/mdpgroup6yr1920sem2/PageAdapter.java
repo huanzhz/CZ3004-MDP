@@ -30,7 +30,6 @@ public class PageAdapter extends FragmentPagerAdapter {
                 return fragment3;
             default:
                 return null;
-
         }
     }
 

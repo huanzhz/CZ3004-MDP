@@ -10,9 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import androidx.annotation.Nullable;
 
@@ -30,6 +27,7 @@ public class MapView extends View {
     private static int waypointX, waypointY;
     private static String robotDirection = "Top";
     private static boolean loadNumberID = false;
+    //Assume that the numberID loaded on the map will not be more than 15
     private static String[][] mapNumberIDString = new String[15][4];
     private static int numberIDCounter = 0;
     public static Canvas mapCanvas;
@@ -55,7 +53,6 @@ public class MapView extends View {
 
     public MapView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-
 
         wallPaint = new Paint();
         wallPaint.setColor(Color.parseColor("#64B5F6"));
@@ -89,8 +86,6 @@ public class MapView extends View {
 
         numberIDPaint = new Paint();
         numberIDPaint.setColor(Color.parseColor("#B6DCFE"));
-
-
     }
 
     @Override
@@ -129,7 +124,7 @@ public class MapView extends View {
 
         //Get margin on each side for horizontal and vertical
         hMargin = (width - COLS * cellSize) / 2;
-        vMargin = (height - ROWS * cellSize) / 2;
+        vMargin = ((height - ROWS * cellSize) / 2);
 
         //set margin in place
         canvas.translate(hMargin, vMargin);
@@ -280,7 +275,6 @@ public class MapView extends View {
             case 5:
                 imageResource = getResources().getDrawable(R.drawable.stop, null);
                 return imageResource;
-            //Start of Numbers
             case 6:
                 imageResource = getResources().getDrawable(R.drawable.one, null);
                 return imageResource;
@@ -296,8 +290,6 @@ public class MapView extends View {
             case 10:
                 imageResource = getResources().getDrawable(R.drawable.five, null);
                 return imageResource;
-            //End of Numbers
-            //Start of ABCDE
             case 11:
                 imageResource = getResources().getDrawable(R.drawable.letter_a, null);
                 return imageResource;
@@ -315,7 +307,8 @@ public class MapView extends View {
                 return imageResource;
             //End of ABCDE
             default:
-                imageResource = getResources().getDrawable(R.drawable.stop, null);
+                //Return random image
+                imageResource = getResources().getDrawable(R.drawable.reload, null);
                 return imageResource;
         }
     }
@@ -423,7 +416,6 @@ public class MapView extends View {
         invalidate();
     }
 
-
     public void initObstacles(Canvas canvas, String binaryInfo) {
         int binaryStringLength = binaryInfo.length();
         Log.d(TAG, "Length:" + binaryStringLength);
@@ -444,8 +436,6 @@ public class MapView extends View {
             }
         }
     }
-
-
 
     public void drawNumberID(Canvas canvas) {
         if (loadNumberID) {
@@ -483,12 +473,10 @@ public class MapView extends View {
         }
     }
 
-
     public void initNumberID(String[] numberIDString) {
         for(int i = 0; i < numberIDString.length; i++){
             Log.d(TAG, numberIDString[i]);
             mapNumberIDString[numberIDCounter][i] = numberIDString[i];
-
         }
         numberIDCounter++;
         loadNumberID = true;
