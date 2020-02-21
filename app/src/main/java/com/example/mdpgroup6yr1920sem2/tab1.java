@@ -1,18 +1,20 @@
 package com.example.mdpgroup6yr1920sem2;
 
-import android.content.SharedPreferences;
-import android.nfc.Tag;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ToggleButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.CompoundButton;
+import android.util.Log;
 
 import java.nio.charset.Charset;
 
@@ -20,14 +22,17 @@ import java.nio.charset.Charset;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class tab1 extends Fragment  {
+public class tab1 extends Fragment {
     ImageButton upBtn;
     ImageButton leftBtn;
     ImageButton downBtn;
     ImageButton rightBtn;
+    ImageButton updateBtn;
     ToggleButton waypointBtn;
     MapView mapView;
+    Switch autoManualSwitch;
 
+    private static final String TAG = "Tab1";
     public MainActivity mainActivityObj;
     private View view;
     private TextView statusMessages;
@@ -40,6 +45,7 @@ public class tab1 extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (view == null) {
+
             // Inflate the layout for this fragment
             mainActivityObj = (MainActivity) getActivity();
 
@@ -51,13 +57,13 @@ public class tab1 extends Fragment  {
             leftBtn = (ImageButton) view.findViewById(R.id.btnLeft);
             rightBtn = (ImageButton) view.findViewById(R.id.btnRight);
             downBtn = (ImageButton) view.findViewById(R.id.btnBottom);
+            updateBtn = (ImageButton) view.findViewById(R.id.btnUpdateMap);
             waypointBtn = (ToggleButton) view.findViewById(R.id.waypointbtn);
+            autoManualSwitch = (Switch) view.findViewById(R.id.autoSwitch);
+            autoManualSwitch.setChecked(false);
+
             // status Messages
             statusMessages = (TextView) view.findViewById(R.id.txtRobotStatus);
-
-            //Save switch state in shared preferences
-            SharedPreferences pref = mainActivityObj.getSharedPreferences("waypointState", mainActivityObj.MODE_PRIVATE);
-            waypointBtn.setChecked(pref.getBoolean("value", waypointBtn.isChecked()));
 
             upBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -95,6 +101,41 @@ public class tab1 extends Fragment  {
                 }
             });
 
+            autoManualSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        if (mainActivityObj.mBluetoothConnection != null) {
+                            thread.start();
+                        }
+                        autoManualSwitch.setTextSize(14);
+                        autoManualSwitch.setText("Auto");
+                        updateBtn.setVisibility(View.GONE);
+
+
+                    } else {
+                        if (mainActivityObj.mBluetoothConnection != null) {
+                            thread.interrupt();
+                        }
+                        autoManualSwitch.setTextSize(12);
+                        autoManualSwitch.setText("Manual");
+                        updateBtn.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
+            updateBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
+                        //Call the function once to fetch
+                        fetchMapCoordinates();
+                        Toast.makeText(getContext(), "Fetching Map Info!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
             waypointBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -115,7 +156,8 @@ public class tab1 extends Fragment  {
                     float y = event.getY();
                     int[] info = mapView.setWaypointOrRobot(x, y);
                     int col = info[0];
-                    int row = info[1];
+                    //Flip the row
+                    int row = 19 - info[1];
                     int isWaypoint = info[2];
                     if (isWaypoint == 1) {
                         sendWaypointCoordinates(col, row);
@@ -123,7 +165,7 @@ public class tab1 extends Fragment  {
                     } else {
                         sendRobotCoordinates(col, row);
                     }
-                    return true;
+                    return false;
                 }
             });
         }
@@ -154,4 +196,40 @@ public class tab1 extends Fragment  {
             mainActivityObj.mBluetoothConnection.write(bytes);
         }
     }
+
+    public void fetchMapCoordinates() {
+        // Send the string "sendArena" to AMDTool
+        if (mainActivityObj.mBluetoothConnection != null) {
+            byte[] bytes = ("sendArena").getBytes(Charset.defaultCharset());
+            mainActivityObj.mBluetoothConnection.write(bytes);
+        }
+    }
+
+    public void displayNumberID(String numberIDString){
+        // 1. x 2. y 3. numberID 4. direction
+        numberIDString = numberIDString.trim();
+        String[] numberArr = numberIDString.split(",");
+        mapView.initNumberID(numberArr);
+    }
+
+    Thread thread = new Thread() {
+        @Override
+        public void run() {
+            while(!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(500);
+                    mainActivityObj.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            fetchMapCoordinates();
+                            //Log.d(TAG, "Worked!");
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    //End the loop on interruption
+                    break;
+                }
+            }
+        }
+    };
 }
