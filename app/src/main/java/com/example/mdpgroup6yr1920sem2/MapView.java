@@ -4,32 +4,37 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ToggleButton;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import androidx.annotation.Nullable;
 
-import java.nio.charset.Charset;
-
 public class MapView extends View {
 
-    ToggleButton waypointBtn;
-
     private static final String TAG = "MazeView";
+    private static String MAP_POSITIONS = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
     private static Cell[][] cells;
     private static final int COLS = 15, ROWS = 20;
     private static final float WALL_THICKNESS = 2;
+    private static final int START_X = 1, START_Y = 18;
+    private static final int GOAL_X = 13, GOAL_Y = 1;
     private static float cellSize, hMargin, vMargin;
     private static int robotRow = 18, robotCol = 1;
     private static int waypointX, waypointY;
     private static String robotDirection = "Top";
+    private static boolean loadNumberID = false;
+    private static String[][] mapNumberIDString = new String[15][4];
+    private static int numberIDCounter = 0;
+    public static Canvas mapCanvas;
 
-    private Paint wallPaint, robotPaint, directionPaint, goalPaint, gridNumberPaint, waypointPaint, unexploredPaint;
+    private Paint wallPaint, robotPaint, directionPaint, startPaint, goalPaint, gridNumberPaint, waypointPaint, obstaclePaint, unexploredPaint, numberIDPaint;
 
     private class Cell {
         float startX, startY, endX, endY;
@@ -42,6 +47,10 @@ public class MapView extends View {
             this.endY = endY;
             this.paint = paint;
         }
+    }
+
+    public MapView(Context context) {
+        this(context, null);
     }
 
     public MapView(Context context, @Nullable AttributeSet attrs) {
@@ -69,20 +78,35 @@ public class MapView extends View {
         gridNumberPaint.setTextSize(18);
         gridNumberPaint.setTypeface(Typeface.DEFAULT);
 
+        startPaint = new Paint();
+        startPaint.setColor(Color.parseColor("#B6DCFE"));
+
         goalPaint = new Paint();
-        goalPaint.setColor(Color.parseColor("#EF5350"));
+        goalPaint.setColor(Color.parseColor("#6EF9F5"));
+
+        obstaclePaint = new Paint();
+        obstaclePaint.setColor(Color.parseColor("#B6DCFE"));
+
+        numberIDPaint = new Paint();
+        numberIDPaint.setColor(Color.parseColor("#B6DCFE"));
+
+
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        alignMap(canvas);
-        drawBorder(canvas);
+        mapCanvas = canvas;
+        alignMap(mapCanvas);
+        drawBorder(mapCanvas);
         initCells();
-        drawCell(canvas);
-        drawGridNumber(canvas);
-        initRobot(canvas);
-        initWaypoint(canvas);
-        drawRobotDirection(canvas);
+        drawCell(mapCanvas);
+        drawGridNumber(mapCanvas);
+        drawStartEnd(mapCanvas);
+        initRobot(mapCanvas);
+        initWaypoint(mapCanvas);
+        initObstacles(mapCanvas, MAP_POSITIONS);
+        drawRobotDirection(mapCanvas);
+        drawNumberID(mapCanvas);
         //initGoal(canvas);
 
     }
@@ -109,6 +133,27 @@ public class MapView extends View {
 
         //set margin in place
         canvas.translate(hMargin, vMargin);
+    }
+
+    //Helper function to draw the cells for Start/End & Robot
+    private void drawGrid(Canvas canvas, int x, int y, Paint gridPaint) {
+        canvas.drawRect(cells[x][y].startX, cells[x][y].startY, cells[x][y].endX, cells[x][y].endY, gridPaint);
+        //top
+        canvas.drawRect(cells[x][y - 1].startX, cells[x][y - 1].startY, cells[x][y - 1].endX, cells[x][y - 1].endY, gridPaint);
+        //bottom
+        canvas.drawRect(cells[x][y + 1].startX, cells[x][y + 1].startY, cells[x][y + 1].endX, cells[x][y + 1].endY, gridPaint);
+        //left
+        canvas.drawRect(cells[x - 1][y].startX, cells[x - 1][y].startY, cells[x - 1][y].endX, cells[x - 1][y].endY, gridPaint);
+        //right
+        canvas.drawRect(cells[x + 1][y].startX, cells[x + 1][y].startY, cells[x + 1][y].endX, cells[x + 1][y].endY, gridPaint);
+        //diagonal top left
+        canvas.drawRect(cells[x - 1][y - 1].startX, cells[x - 1][y - 1].startY, cells[x - 1][y - 1].endX, cells[x - 1][y - 1].endY, gridPaint);
+        //diagonal top right
+        canvas.drawRect(cells[x + 1][y - 1].startX, cells[x + 1][y - 1].startY, cells[x + 1][y - 1].endX, cells[x + 1][y - 1].endY, gridPaint);
+        //diagonal bottom left
+        canvas.drawRect(cells[x - 1][y + 1].startX, cells[x - 1][y + 1].startY, cells[x - 1][y + 1].endX, cells[x - 1][y + 1].endY, gridPaint);
+        //diagonal bottom right
+        canvas.drawRect(cells[x + 1][y + 1].startX, cells[x + 1][y + 1].startY, cells[x + 1][y + 1].endX, cells[x + 1][y + 1].endY, gridPaint);
     }
 
     //Draw out the 15x20 grid
@@ -178,24 +223,22 @@ public class MapView extends View {
 
         for (int x = 0; x < 15; x++) {
 
-            if(x >9 && x <15){
+            if (x > 9 && x < 15) {
 
                 canvas.drawText(Integer.toString(x), cells[x][19].startX + (cellSize / 5), cells[x][19].endY + (cellSize / 1.5f), gridNumberPaint);
-            }
-            else {
+            } else {
                 //GRID NUMBER FOR ROW
                 canvas.drawText(Integer.toString(x), cells[x][19].startX + (cellSize / 3), cells[x][19].endY + (cellSize / 1.5f), gridNumberPaint);
 
             }
         }
 
-        for (int x = 0; x <20; x++) {
+        for (int x = 0; x < 20; x++) {
 
-            if(x >9 && x <20){
+            if (x > 9 && x < 20) {
 
                 canvas.drawText(Integer.toString(19 - x), cells[0][x].startX - (cellSize / 1.5f), cells[0][x].endY - (cellSize / 3.5f), gridNumberPaint);
-            }
-            else {
+            } else {
 
                 canvas.drawText(Integer.toString(19 - x), cells[0][x].startX - (cellSize / 1.2f), cells[0][x].endY - (cellSize / 3.5f), gridNumberPaint);
 
@@ -203,28 +246,78 @@ public class MapView extends View {
         }
     }
 
-    private void initRobot(Canvas canvas) {
-        canvas.drawRect(cells[robotCol][robotRow].startX, cells[robotCol][robotRow].startY, cells[robotCol][robotRow].endX, cells[robotCol][robotRow].endY, robotPaint);
-        //top
-        canvas.drawRect(cells[robotCol][robotRow - 1].startX, cells[robotCol][robotRow - 1].startY, cells[robotCol][robotRow - 1].endX, cells[robotCol][robotRow - 1].endY, robotPaint);
-        //bottom
-        canvas.drawRect(cells[robotCol][robotRow + 1].startX, cells[robotCol][robotRow + 1].startY, cells[robotCol][robotRow + 1].endX, cells[robotCol][robotRow + 1].endY, robotPaint);
-        //left
-        canvas.drawRect(cells[robotCol - 1][robotRow].startX, cells[robotCol - 1][robotRow].startY, cells[robotCol - 1][robotRow].endX, cells[robotCol - 1][robotRow].endY, robotPaint);
-        //right
-        canvas.drawRect(cells[robotCol + 1][robotRow].startX, cells[robotCol + 1][robotRow].startY, cells[robotCol + 1][robotRow].endX, cells[robotCol + 1][robotRow].endY, robotPaint);
-        //diagonal top left
-        canvas.drawRect(cells[robotCol - 1][robotRow - 1].startX, cells[robotCol - 1][robotRow - 1].startY, cells[robotCol - 1][robotRow - 1].endX, cells[robotCol - 1][robotRow - 1].endY, robotPaint);
-        //diagonal top right
-        canvas.drawRect(cells[robotCol + 1][robotRow - 1].startX, cells[robotCol + 1][robotRow - 1].startY, cells[robotCol + 1][robotRow - 1].endX, cells[robotCol + 1][robotRow - 1].endY, robotPaint);
-        //diagonal bottom left
-        canvas.drawRect(cells[robotCol - 1][robotRow + 1].startX, cells[robotCol - 1][robotRow + 1].startY, cells[robotCol - 1][robotRow + 1].endX, cells[robotCol - 1][robotRow + 1].endY, robotPaint);
-        //diagonal bottom right
-        canvas.drawRect(cells[robotCol + 1][robotRow + 1].startX, cells[robotCol + 1][robotRow + 1].startY, cells[robotCol + 1][robotRow + 1].endX, cells[robotCol + 1][robotRow + 1].endY, robotPaint);
+    private void drawStartEnd(Canvas canvas) {
+        drawGrid(canvas, START_X, START_Y, startPaint);
+        drawGrid(canvas, GOAL_X, GOAL_Y, goalPaint);
     }
 
-    private void initWaypoint(Canvas canvas){
-        canvas.drawRect(cells[waypointX][waypointY].startX, cells[waypointX][waypointY].startY, cells[waypointX][waypointY].endX, cells[waypointX][waypointY].endY, waypointPaint);
+    private void initRobot(Canvas canvas) {
+        drawGrid(canvas, robotCol, robotRow, robotPaint);
+    }
+
+    private void initWaypoint(Canvas canvas) {
+        //Don't draw waypoint block if it is default
+        if (!(waypointX == 0 && waypointY == 0)) {
+            canvas.drawRect(cells[waypointX][waypointY].startX, cells[waypointX][waypointY].startY, cells[waypointX][waypointY].endX, cells[waypointX][waypointY].endY, waypointPaint);
+        }
+    }
+
+    private Drawable getImageResource(int numberID) {
+        Drawable imageResource;
+        switch (numberID) {
+            case 1:
+                imageResource = getResources().getDrawable(R.drawable.upbtn, null);
+                return imageResource;
+            case 2:
+                imageResource = getResources().getDrawable(R.drawable.downbtn, null);
+                return imageResource;
+            case 3:
+                imageResource = getResources().getDrawable(R.drawable.leftbtn, null);
+                return imageResource;
+            case 4:
+                imageResource = getResources().getDrawable(R.drawable.rightbtn, null);
+                return imageResource;
+            case 5:
+                imageResource = getResources().getDrawable(R.drawable.stop, null);
+                return imageResource;
+            //Start of Numbers
+            case 6:
+                imageResource = getResources().getDrawable(R.drawable.one, null);
+                return imageResource;
+            case 7:
+                imageResource = getResources().getDrawable(R.drawable.two, null);
+                return imageResource;
+            case 8:
+                imageResource = getResources().getDrawable(R.drawable.three, null);
+                return imageResource;
+            case 9:
+                imageResource = getResources().getDrawable(R.drawable.four, null);
+                return imageResource;
+            case 10:
+                imageResource = getResources().getDrawable(R.drawable.five, null);
+                return imageResource;
+            //End of Numbers
+            //Start of ABCDE
+            case 11:
+                imageResource = getResources().getDrawable(R.drawable.letter_a, null);
+                return imageResource;
+            case 12:
+                imageResource = getResources().getDrawable(R.drawable.letter_b, null);
+                return imageResource;
+            case 13:
+                imageResource = getResources().getDrawable(R.drawable.letter_c, null);
+                return imageResource;
+            case 14:
+                imageResource = getResources().getDrawable(R.drawable.letter_d, null);
+                return imageResource;
+            case 15:
+                imageResource = getResources().getDrawable(R.drawable.letter_e, null);
+                return imageResource;
+            //End of ABCDE
+            default:
+                imageResource = getResources().getDrawable(R.drawable.stop, null);
+                return imageResource;
+        }
     }
 
     private void drawRobotDirection(Canvas canvas) {
@@ -238,17 +331,17 @@ public class MapView extends View {
                 break;
             case "Left":
                 canvas.drawRect(cells[robotCol - 1][robotRow].startX,
-                                cells[robotCol - 1][robotRow].startY,
-                                cells[robotCol - 1][robotRow].endX,
-                                cells[robotCol - 1][robotRow].endY,
-                                directionPaint);
+                        cells[robotCol - 1][robotRow].startY,
+                        cells[robotCol - 1][robotRow].endX,
+                        cells[robotCol - 1][robotRow].endY,
+                        directionPaint);
                 break;
             case "Right":
                 canvas.drawRect(cells[robotCol + 1][robotRow].startX,
-                                cells[robotCol + 1][robotRow].startY,
-                                cells[robotCol + 1][robotRow].endX,
-                                cells[robotCol + 1][robotRow].endY,
-                                directionPaint);
+                        cells[robotCol + 1][robotRow].startY,
+                        cells[robotCol + 1][robotRow].endX,
+                        cells[robotCol + 1][robotRow].endY,
+                        directionPaint);
                 break;
             default:
                 canvas.drawRect(cells[robotCol][robotRow - 1].startX,
@@ -256,40 +349,33 @@ public class MapView extends View {
                         cells[robotCol][robotRow - 1].endX,
                         cells[robotCol][robotRow - 1].endY,
                         directionPaint);
-               }
+        }
     }
 
-
-    //ON TOUCH METHOD
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
+    public int[] setWaypointOrRobot(float x, float y) {
         int coordinates[];
-        float x = event.getX();
-        float y = event.getY();
+        int isWaypoint = 0;
+        Log.d(TAG, "X " + x + " " + "y " + y);
         coordinates = getSelectedRowCol(x, y);
-
         int selectedCol = coordinates[0];
         int selectedRow = coordinates[1];
-        Log.d(TAG, "Start X: " + MainActivity.wayPointChecked);
+        Log.d(TAG, "selectedCol " + selectedCol + " " + "selectedRow " + selectedRow);
         if (selectedRow >= 0 && selectedCol >= 0) {
             //Check to see if the selected box is not at the first or last row/cols
             if ((selectedCol != 0 && selectedCol != 14) && (selectedRow != 0 && selectedRow != 19)) {
-               if(MainActivity.wayPointChecked){
+                if (MainActivity.wayPointChecked) {
                     waypointX = selectedCol;
                     waypointY = selectedRow;
-               }
-               else{
+                    isWaypoint = 1;
+                } else {
                     robotCol = selectedCol;
                     robotRow = selectedRow;
-               }
+                }
             }
         }
-
         //Recycle view
         invalidate();
-
-        return super.onTouchEvent(event);
+        return new int[]{selectedCol, selectedRow, isWaypoint};
     }
 
     public int[] getSelectedRowCol(float x, float y) {
@@ -305,14 +391,108 @@ public class MapView extends View {
 
         int counter = 0;
         //Get selected row index
-        for (int j = ROWS-1; j >= 0; j--) {
+        for (int j = ROWS - 1; j >= 0; j--) {
             if (cells[0][j].endY >= (y - vMargin) && cells[0][j].startY <= (y - vMargin)) {
-                row = ROWS - counter -1;
+                row = ROWS - counter - 1;
                 break;
             }
             counter++;
         }
 
         return new int[]{cols, row};
+    }
+
+    //Conversion from Hexadecimal to Decimal to Binary
+    public void setGridMap(String Hex) {
+        // 5 Hex digit each time to prevent overflow
+        String mdfStringBin = "";
+        String bin = "";
+        String partial;
+        int pointer = 0;
+        while (Hex.length() - pointer > 0) {
+            partial = Hex.substring(pointer, pointer + 1);
+            bin = Integer.toBinaryString(Integer.parseInt(partial, 16));
+            for (int i = 0; i < 4 - bin.length(); i++) {
+                mdfStringBin = mdfStringBin.concat("0");
+            }
+            mdfStringBin = mdfStringBin.concat(bin);
+            pointer += 1;
+        }
+        MAP_POSITIONS = mdfStringBin;
+        // RecycleView
+        invalidate();
+    }
+
+
+    public void initObstacles(Canvas canvas, String binaryInfo) {
+        int binaryStringLength = binaryInfo.length();
+        Log.d(TAG, "Length:" + binaryStringLength);
+        int alphabet;
+        int counter = 0;
+        for (int j = 0; j < ROWS; j++) {
+            for (int k = 0; k < COLS; k++) {
+                alphabet = (int) binaryInfo.charAt(0);
+                //Log.d(TAG, "Alpha: " + alphabet);
+                binaryInfo = binaryInfo.substring(1);
+                //ASCII for 1 is 49
+                if (alphabet == 49) {
+                    //Log.d(TAG, "Check: " + alphabet);
+                    canvas.drawRect(cells[k][j].startX, cells[k][j].startY, cells[k][j].endX, cells[k][j].endY, obstaclePaint);
+                }
+                counter++;
+                //Log.d(TAG, "Counter:" + counter);
+            }
+        }
+    }
+
+
+
+    public void drawNumberID(Canvas canvas) {
+        if (loadNumberID) {
+            for(int i = 0; i < numberIDCounter; i++){
+                int x = Integer.parseInt(mapNumberIDString[i][0]);
+                int y = Math.abs(Integer.parseInt(mapNumberIDString[i][1]) - 19);
+                int numberID = Integer.parseInt(mapNumberIDString[i][2]);
+                String direction = mapNumberIDString[i][3];
+                Drawable directionResouce;
+
+                int arrowPositionCol = x;
+                int arrowPositionRow = y;
+
+                Drawable arrows = getImageResource(numberID);
+                arrows.setBounds(new Rect((int) (cells[arrowPositionCol][arrowPositionRow].startX), (int) (cells[arrowPositionCol][arrowPositionRow].startY), ((int) cells[arrowPositionCol][arrowPositionRow].endX), ((int) cells[arrowPositionCol][arrowPositionRow].endY)));
+                arrows.draw(mapCanvas);
+
+                if (direction.equals("Up")) {
+                    arrowPositionRow = arrowPositionRow - 1;
+                    directionResouce = getResources().getDrawable(R.drawable.downbtn, null);
+                } else if (direction.equals("Down")) {
+                    arrowPositionRow = arrowPositionRow + 1;
+                    directionResouce = getResources().getDrawable(R.drawable.upbtn, null);
+                } else if (direction.equals("Left")) {
+                    arrowPositionCol = arrowPositionCol - 1;
+                    directionResouce = getResources().getDrawable(R.drawable.rightbtn, null);
+                } else {
+                    arrowPositionCol = arrowPositionCol + 1;
+                    directionResouce = getResources().getDrawable(R.drawable.leftbtn, null);
+                }
+
+                directionResouce.setBounds(new Rect((int) (cells[arrowPositionCol][arrowPositionRow].startX), (int) (cells[arrowPositionCol][arrowPositionRow].startY), ((int) cells[arrowPositionCol][arrowPositionRow].endX), ((int) cells[arrowPositionCol][arrowPositionRow].endY)));
+                directionResouce.draw(mapCanvas);
+            }
+        }
+    }
+
+
+    public void initNumberID(String[] numberIDString) {
+        for(int i = 0; i < numberIDString.length; i++){
+            Log.d(TAG, numberIDString[i]);
+            mapNumberIDString[numberIDCounter][i] = numberIDString[i];
+
+        }
+        numberIDCounter++;
+        loadNumberID = true;
+        invalidate();
+
     }
 }

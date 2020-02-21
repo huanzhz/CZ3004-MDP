@@ -1,5 +1,6 @@
 package com.example.mdpgroup6yr1920sem2;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -28,7 +29,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     public static final int RECONNECT_MAXIMUM_TIMES = 5;
     public static final String SHARED_PREFS = "sharedPrefs";
@@ -82,8 +83,8 @@ public class MainActivity extends AppCompatActivity{
             final String action = intent.getAction();
             //Log.d(TAG, "onReceive: ACTION FOUND.");
 
-            if (action.equals(BluetoothDevice.ACTION_FOUND)){
-                BluetoothDevice device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
+            if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mBTDevices.add(device);
                 //Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
@@ -100,11 +101,11 @@ public class MainActivity extends AppCompatActivity{
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
-            if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)){
+            if (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
                 BluetoothDevice mDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 //3 cases:
                 //case1: bonded already
-                if (mDevice.getBondState() == BluetoothDevice.BOND_BONDED){
+                if (mDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
                     //Log.d(TAG, "BroadcastReceiver: BOND_BONDED.");
                     //inside BroadcastReceiver4
                     mBTDevice = mDevice;
@@ -129,13 +130,13 @@ public class MainActivity extends AppCompatActivity{
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
-            if(BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+            if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 //Device has disconnected
                 //Log.d(TAG, "Device Disconnected");
                 //reconnect();
 
                 // reconnect to the device 5 times
-                if(reconnectCount < RECONNECT_MAXIMUM_TIMES) {
+                if (reconnectCount < RECONNECT_MAXIMUM_TIMES) {
                     // wait 3second before calling the reconnect function
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -148,12 +149,12 @@ public class MainActivity extends AppCompatActivity{
         }
     };
 
-    private void reconnect(){
+    private void reconnect() {
         startConnection();
 
-        if(mBluetoothConnection.getBluetoothState()){
+        if (mBluetoothConnection.getBluetoothState()) {
             reconnectCount = 0;
-        }else{
+        } else {
             reconnectCount++;
         }
     }
@@ -192,11 +193,11 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                if(tab.getPosition() == 0){
+                if (tab.getPosition() == 0) {
                     pageradapter.notifyDataSetChanged();
-                }else if(tab.getPosition() == 1){
+                } else if (tab.getPosition() == 1) {
                     pageradapter.notifyDataSetChanged();
-                }else if(tab.getPosition() == 2){
+                } else if (tab.getPosition() == 2) {
                     pageradapter.notifyDataSetChanged();
                 }
             }
@@ -235,17 +236,17 @@ public class MainActivity extends AppCompatActivity{
 
     //create method for starting connection
 //***remember the conncction will fail and app will crash if you haven't paired first
-    public void startConnection(){
-        startBTConnection(mBTDevice,MY_UUID_INSECURE);
+    public void startConnection() {
+        startBTConnection(mBTDevice, MY_UUID_INSECURE);
     }
 
     /**
      * starting chat service method
      */
-    public void startBTConnection(BluetoothDevice device, UUID uuid){
+    public void startBTConnection(BluetoothDevice device, UUID uuid) {
         //Log.d(TAG, "startBTConnection: Initializing RFCOM Bluetooth Connection.");
 
-        mBluetoothConnection.startClient(device,uuid);
+        mBluetoothConnection.startClient(device, uuid);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -253,7 +254,7 @@ public class MainActivity extends AppCompatActivity{
         //Log.d(TAG, "btnDiscover: Looking for unpaired devices.");
         Toast.makeText(getApplicationContext(), "Scanning...", Toast.LENGTH_LONG).show();
 
-        if(mBluetoothAdapter.isDiscovering()){
+        if (mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
             //Log.d(TAG, "btnDiscover: Canceling discovery.");
 
@@ -264,7 +265,7 @@ public class MainActivity extends AppCompatActivity{
             IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
         }
-        if(!mBluetoothAdapter.isDiscovering()){
+        if (!mBluetoothAdapter.isDiscovering()) {
 
             //check BT permissions in manifest
             checkBTPermissions();
@@ -279,19 +280,19 @@ public class MainActivity extends AppCompatActivity{
      * This method is required for all devices running API23+
      * Android must programmatically check the permissions for bluetooth. Putting the proper permissions
      * in the manifest is not enough.
-     *
+     * <p>
      * NOTE: This will only execute on versions > LOLLIPOP because it is not needed otherwise.
      */
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkBTPermissions() {
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             int permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
             permissionCheck += this.checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
             if (permissionCheck != 0) {
 
                 this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
             }
-        }else{
+        } else {
             //Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
         }
     }
@@ -302,18 +303,41 @@ public class MainActivity extends AppCompatActivity{
         public void onReceive(Context context, Intent intent) {
             String text = intent.getStringExtra("theMessage");
 
-            if(text.contains("status")){
+            if (text.contains("status")) {
                 text = text.replace("\"status\"", "");
-                Log.d(TAG, text);
+                //Log.d(TAG, text);
                 Pattern pattern = Pattern.compile("\"(.*?)\"");
                 Matcher matcher = pattern.matcher(text);
-                if (matcher.find())
-                {
+                if (matcher.find()) {
                     text = matcher.group();
                     //messages.append(text + "\n");
                     ((tab1) pageradapter.fragment1).setIncomingText(text);
                 }
-            }else{
+            } else if (text.contains("grid")) {
+                text = text.replace("\"grid\"", "");
+                //Log.d(TAG, text);
+                Pattern pattern = Pattern.compile("\"(.*?)\"");
+                Matcher matcher = pattern.matcher(text);
+                if (matcher.find()) {
+                    text = matcher.group();
+                    text = text.replace("\"", "");
+                    Log.d(TAG, text);
+                    ((tab1) pageradapter.fragment1).setMapObstacles(text);
+                }
+            }
+            else if(text.contains("sendNumberID")){
+                //example {"sendNumberID":("x, y, NumberID, direction")}
+                text = text.replace("\"sendNumberID\"", "");
+                Pattern pattern = Pattern.compile("\"(.*?)\"");
+                Matcher matcher = pattern.matcher(text);
+                if (matcher.find()) {
+                    text = matcher.group();
+                    text = text.replace("\"", "");
+                    Log.d(TAG, text);
+                    ((tab1) pageradapter.fragment1).displayNumberID(text);
+                }
+            }
+            else {
                 messages.append(text + "\n");
                 ((tab3) pageradapter.fragment3).setIncomingText(messages);
             }
