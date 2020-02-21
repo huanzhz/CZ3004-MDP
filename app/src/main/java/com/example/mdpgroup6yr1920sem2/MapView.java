@@ -4,10 +4,15 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import androidx.annotation.Nullable;
 
@@ -25,7 +30,8 @@ public class MapView extends View {
     private static int waypointX, waypointY;
     private static String robotDirection = "Top";
     private static boolean loadNumberID = false;
-    private static String[] mapNumberIDString;
+    private static String[][] mapNumberIDString = new String[15][4];
+    private static int numberIDCounter = 0;
     public static Canvas mapCanvas;
 
     private Paint wallPaint, robotPaint, directionPaint, startPaint, goalPaint, gridNumberPaint, waypointPaint, obstaclePaint, unexploredPaint, numberIDPaint;
@@ -256,6 +262,64 @@ public class MapView extends View {
         }
     }
 
+    private Drawable getImageResource(int numberID) {
+        Drawable imageResource;
+        switch (numberID) {
+            case 1:
+                imageResource = getResources().getDrawable(R.drawable.upbtn, null);
+                return imageResource;
+            case 2:
+                imageResource = getResources().getDrawable(R.drawable.downbtn, null);
+                return imageResource;
+            case 3:
+                imageResource = getResources().getDrawable(R.drawable.leftbtn, null);
+                return imageResource;
+            case 4:
+                imageResource = getResources().getDrawable(R.drawable.rightbtn, null);
+                return imageResource;
+            case 5:
+                imageResource = getResources().getDrawable(R.drawable.stop, null);
+                return imageResource;
+            //Start of Numbers
+            case 6:
+                imageResource = getResources().getDrawable(R.drawable.one, null);
+                return imageResource;
+            case 7:
+                imageResource = getResources().getDrawable(R.drawable.two, null);
+                return imageResource;
+            case 8:
+                imageResource = getResources().getDrawable(R.drawable.three, null);
+                return imageResource;
+            case 9:
+                imageResource = getResources().getDrawable(R.drawable.four, null);
+                return imageResource;
+            case 10:
+                imageResource = getResources().getDrawable(R.drawable.five, null);
+                return imageResource;
+            //End of Numbers
+            //Start of ABCDE
+            case 11:
+                imageResource = getResources().getDrawable(R.drawable.letter_a, null);
+                return imageResource;
+            case 12:
+                imageResource = getResources().getDrawable(R.drawable.letter_b, null);
+                return imageResource;
+            case 13:
+                imageResource = getResources().getDrawable(R.drawable.letter_c, null);
+                return imageResource;
+            case 14:
+                imageResource = getResources().getDrawable(R.drawable.letter_d, null);
+                return imageResource;
+            case 15:
+                imageResource = getResources().getDrawable(R.drawable.letter_e, null);
+                return imageResource;
+            //End of ABCDE
+            default:
+                imageResource = getResources().getDrawable(R.drawable.stop, null);
+                return imageResource;
+        }
+    }
+
     private void drawRobotDirection(Canvas canvas) {
         switch (robotDirection) {
             case "Down":
@@ -381,19 +445,52 @@ public class MapView extends View {
         }
     }
 
+
+
     public void drawNumberID(Canvas canvas) {
         if (loadNumberID) {
-            int x = Integer.parseInt(mapNumberIDString[0]);
-            int y = Math.abs(Integer.parseInt(mapNumberIDString[1]) - 19);
-            int numberID = Integer.parseInt(mapNumberIDString[2]);
-            String direction = mapNumberIDString[3];
-            canvas.drawRect(cells[x][y].startX, cells[x][y].startY, cells[x][y].endX, cells[x][y].endY, numberIDPaint);
+            for(int i = 0; i < numberIDCounter; i++){
+                int x = Integer.parseInt(mapNumberIDString[i][0]);
+                int y = Math.abs(Integer.parseInt(mapNumberIDString[i][1]) - 19);
+                int numberID = Integer.parseInt(mapNumberIDString[i][2]);
+                String direction = mapNumberIDString[i][3];
+                Drawable directionResouce;
+
+                int arrowPositionCol = x;
+                int arrowPositionRow = y;
+
+                Drawable arrows = getImageResource(numberID);
+                arrows.setBounds(new Rect((int) (cells[arrowPositionCol][arrowPositionRow].startX), (int) (cells[arrowPositionCol][arrowPositionRow].startY), ((int) cells[arrowPositionCol][arrowPositionRow].endX), ((int) cells[arrowPositionCol][arrowPositionRow].endY)));
+                arrows.draw(mapCanvas);
+
+                if (direction.equals("Up")) {
+                    arrowPositionRow = arrowPositionRow - 1;
+                    directionResouce = getResources().getDrawable(R.drawable.downbtn, null);
+                } else if (direction.equals("Down")) {
+                    arrowPositionRow = arrowPositionRow + 1;
+                    directionResouce = getResources().getDrawable(R.drawable.upbtn, null);
+                } else if (direction.equals("Left")) {
+                    arrowPositionCol = arrowPositionCol - 1;
+                    directionResouce = getResources().getDrawable(R.drawable.rightbtn, null);
+                } else {
+                    arrowPositionCol = arrowPositionCol + 1;
+                    directionResouce = getResources().getDrawable(R.drawable.leftbtn, null);
+                }
+
+                directionResouce.setBounds(new Rect((int) (cells[arrowPositionCol][arrowPositionRow].startX), (int) (cells[arrowPositionCol][arrowPositionRow].startY), ((int) cells[arrowPositionCol][arrowPositionRow].endX), ((int) cells[arrowPositionCol][arrowPositionRow].endY)));
+                directionResouce.draw(mapCanvas);
+            }
         }
     }
 
 
     public void initNumberID(String[] numberIDString) {
-        mapNumberIDString = numberIDString;
+        for(int i = 0; i < numberIDString.length; i++){
+            Log.d(TAG, numberIDString[i]);
+            mapNumberIDString[numberIDCounter][i] = numberIDString[i];
+
+        }
+        numberIDCounter++;
         loadNumberID = true;
         invalidate();
 
