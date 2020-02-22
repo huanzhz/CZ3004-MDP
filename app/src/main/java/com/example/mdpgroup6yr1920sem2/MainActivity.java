@@ -21,7 +21,9 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.TextView;
+
 import androidx.appcompat.widget.Toolbar;
+
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 
@@ -110,13 +112,13 @@ public class MainActivity extends AppCompatActivity {
                 //3 cases:
                 //case1: bonded already
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
-                    //Log.d(TAG, "BroadcastReceiver: BOND_BONDED.");
+                    Log.d(TAG, "BroadcastReceiver: BOND_BONDED.");
                     //inside BroadcastReceiver4
                     mBTDevice = mDevice;
                 }
                 //case2: creating a bond
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
-                    //Log.d(TAG, "BroadcastReceiver: BOND_BONDING.");
+                    Log.d(TAG, "BroadcastReceiver: BOND_BONDING.");
                 }
                 //case3: breaking a bond
                 if (mDevice.getBondState() == BluetoothDevice.BOND_NONE) {
@@ -134,10 +136,15 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
+            if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
+                showBluetoothConnected();
+            }
             if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 //Device has disconnected
                 //Log.d(TAG, "Device Disconnected");
                 //reconnect();
+
+                showBluetoothDisconnected();
 
                 // reconnect to the device 5 times
                 if (reconnectCount < RECONNECT_MAXIMUM_TIMES) {
@@ -237,6 +244,11 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter disconnectedDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         registerReceiver(mBroadcastReceiver2, disconnectedDevicesIntent);
 
+        //Broadcast when connected
+        IntentFilter connectedDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED);
+        registerReceiver(mBroadcastReceiver2, connectedDevicesIntent);
+
+
         // Set up broadcast for receiving message
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
 
@@ -259,12 +271,12 @@ public class MainActivity extends AppCompatActivity {
 
     //Added the UI for Bluetooth
     //Call it in the BluetoothConnectionService to display
-    public void showBluetoothConnected(){
+    public void showBluetoothConnected() {
         bluetoothToolBar.setBackgroundColor(Color.parseColor("#2196F3"));
         bluetoothToolBarText.setText("Bluetooth: Connected");
     }
 
-    public void showBluetoothDisconnected(){
+    public void showBluetoothDisconnected() {
         bluetoothToolBar.setBackgroundColor(Color.parseColor("#6C6D6D"));
         bluetoothToolBarText.setText("Bluetooth: Not Connected");
     }
@@ -344,8 +356,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, text);
                     ((tab1) pageradapter.fragment1).setMapObstacles(text);
                 }
-            }
-            else if(text.contains("sendNumberID")){
+            } else if (text.contains("sendNumberID")) {
                 //example {"sendNumberID":("x, y, NumberID, direction")}
                 text = text.replace("\"sendNumberID\"", "");
                 Pattern pattern = Pattern.compile("\"(.*?)\"");
@@ -356,8 +367,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, text);
                     ((tab1) pageradapter.fragment1).displayNumberID(text);
                 }
-            }
-            else {
+            } else {
                 messages.append(text + "\n");
                 ((tab3) pageradapter.fragment3).setIncomingText(messages);
             }
