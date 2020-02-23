@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class tab1 extends Fragment {
+public class MapTab extends Fragment {
     ImageButton upBtn;
     ImageButton leftBtn;
     ImageButton downBtn;
@@ -37,7 +37,7 @@ public class tab1 extends Fragment {
     private View view;
     private TextView statusMessages;
 
-    public tab1() {
+    public MapTab() {
         // Required empty public constructor
     }
 

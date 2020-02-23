@@ -343,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
                 if (matcher.find()) {
                     text = matcher.group();
                     //messages.append(text + "\n");
-                    ((tab1) pageradapter.fragment1).setIncomingText(text);
+                    ((MapTab) pageradapter.fragment1).setIncomingText(text);
                 }
             } else if (text.contains("grid")) {
                 text = text.replace("\"grid\"", "");
@@ -354,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
                     text = matcher.group();
                     text = text.replace("\"", "");
                     Log.d(TAG, text);
-                    ((tab1) pageradapter.fragment1).setMapObstacles(text);
+                    ((MapTab) pageradapter.fragment1).setMapObstacles(text);
                 }
             } else if (text.contains("sendNumberID")) {
                 //example {"sendNumberID":("x, y, NumberID, direction")}
@@ -365,11 +365,11 @@ public class MainActivity extends AppCompatActivity {
                     text = matcher.group();
                     text = text.replace("\"", "");
                     Log.d(TAG, text);
-                    ((tab1) pageradapter.fragment1).displayNumberID(text);
+                    ((MapTab) pageradapter.fragment1).displayNumberID(text);
                 }
             } else {
                 messages.append(text + "\n");
-                ((tab3) pageradapter.fragment3).setIncomingText(messages);
+                ((CommsTab) pageradapter.fragment3).setIncomingText(messages);
             }
         }
     };

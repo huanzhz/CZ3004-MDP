@@ -7,7 +7,7 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
-    tools:context=".tab3">
+    tools:context=".CommsTab">
 
     <RelativeLayout
         android:layout_width="match_parent"

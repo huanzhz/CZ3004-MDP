@@ -19,10 +19,10 @@ import android.widget.Toast;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class tab2 extends Fragment {
+public class BluetoothTab extends Fragment {
 
 
-    public tab2() {
+    public BluetoothTab() {
         // Required empty public constructor
     }
 

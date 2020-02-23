@@ -27,10 +27,10 @@ import static com.example.mdpgroup6yr1920sem2.MainActivity.TEXT_F2;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class tab3 extends Fragment {
+public class CommsTab extends Fragment {
 
 
-    public tab3() {
+    public CommsTab() {
         // Required empty public constructor
     }
 
