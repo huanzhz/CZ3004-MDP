@@ -44,9 +44,14 @@ public class BluetoothTab extends Fragment {
             Button btnDiscover = (Button) view.findViewById(R.id.btnFindUnpairedDevices);
 
             mainActivityObj.lvNewDevices = (ListView) view.findViewById(R.id.lvNewDevices);
+            mainActivityObj.lvNewDevices.setDivider(null);
+            mainActivityObj.lvNewDevices.setDividerHeight(0);
+
             mainActivityObj.lvNewDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    //clear current list first
+
                     //first cancel discovery because its very memory intensive.
                     mainActivityObj.mBluetoothAdapter.cancelDiscovery();
 
@@ -79,6 +84,8 @@ public class BluetoothTab extends Fragment {
                 public void onClick(View view) {
                     //Log.d(TAG, "onClick: enabling/disabling bluetooth.");
                     mainActivityObj.btnDiscover();
+                    //Clear all list items
+                    mainActivityObj.mBTDevices.clear();
                 }
             });
 
