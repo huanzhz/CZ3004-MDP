@@ -28,6 +28,9 @@
     <string name="btn_logstatus">Logs</string>
     <string name="btn_robotstatus">Robot Status: N/A</string>
 
+    <string name="btn_discover">Discover</string>
+    <string name="txt_btHeaderText">Find your Raspberry Pi device</string>
+
     <string name="btn_f1">F1 btn</string>
     <string name="btn_f2">F2 btn</string>
     <string name="btn_reconfigure">Reconfigure</string>

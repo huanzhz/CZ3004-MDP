@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ public class BluetoothTab extends Fragment {
     // Variables
     public MainActivity mainActivityObj;
     private View view;
+    ImageView imgRaspberry;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,6 +44,7 @@ public class BluetoothTab extends Fragment {
             view = inflater.inflate(R.layout.bluetooth, container, false);
 
             Button btnDiscover = (Button) view.findViewById(R.id.btnFindUnpairedDevices);
+             imgRaspberry = (ImageView) view.findViewById(R.id.imgRaspberry);
 
             mainActivityObj.lvNewDevices = (ListView) view.findViewById(R.id.lvNewDevices);
             mainActivityObj.lvNewDevices.setDivider(null);
@@ -82,6 +85,8 @@ public class BluetoothTab extends Fragment {
                 @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onClick(View view) {
+                    //Hide raspberry image
+                    imgRaspberry.setVisibility(view.INVISIBLE);
                     //Log.d(TAG, "onClick: enabling/disabling bluetooth.");
                     mainActivityObj.btnDiscover();
                     //Clear all list items
