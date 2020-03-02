@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ToggleButton;
 import android.widget.Switch;
@@ -29,6 +30,8 @@ public class MapTab extends Fragment {
     ImageButton rightBtn;
     ImageButton updateBtn;
     ToggleButton waypointBtn;
+    Button startBtn;
+    Button exploreBtn;
     MapView mapView;
     Switch autoManualSwitch;
 
@@ -59,6 +62,8 @@ public class MapTab extends Fragment {
             downBtn = (ImageButton) view.findViewById(R.id.btnBottom);
             updateBtn = (ImageButton) view.findViewById(R.id.btnUpdateMap);
             waypointBtn = (ToggleButton) view.findViewById(R.id.waypointbtn);
+            startBtn = (Button) view.findViewById(R.id.startbtn);
+            exploreBtn = (Button) view.findViewById(R.id.explorebtn);
             autoManualSwitch = (Switch) view.findViewById(R.id.autoSwitch);
             autoManualSwitch.setChecked(false);
 
@@ -87,6 +92,24 @@ public class MapTab extends Fragment {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
                         byte[] bytes = ("tr").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
+                }
+            });
+
+            startBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("pFASTEST").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
+                }
+            });
+
+            exploreBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("pEXPLORE").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     }
                 }
@@ -177,13 +200,21 @@ public class MapTab extends Fragment {
         statusMessages.setText(yourText);
     }
 
-    public void setMapObstacles(String hexString) {
-        mapView.setGridMap(hexString);
+    public void setMapExploredObstacles(String exploredHex, String obstaclesHex) {
+        mapView.setMapExploredObstacles(exploredHex, obstaclesHex);
+    }
+
+    public void setRobotCoordinates(int col, int row){
+        mapView.setRobotCoordinates(col, row);
+    }
+
+    public void setRobotDirection(String direction){
+        mapView.setRobotDirection(direction);
     }
 
     public void sendWaypointCoordinates(int col, int row) {
         if (mainActivityObj.mBluetoothConnection != null) {
-            String waypointMessage = "Waypoint at (" + col + "," + row + ")";
+            String waypointMessage = "p|WAYPOINT|" + row + "|" + col;
             byte[] bytes = waypointMessage.getBytes(Charset.defaultCharset());
             mainActivityObj.mBluetoothConnection.write(bytes);
         }

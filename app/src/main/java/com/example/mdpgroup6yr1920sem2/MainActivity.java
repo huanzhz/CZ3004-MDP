@@ -92,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mBTDevices.add(device);
+               /* if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
+                    mBTDevices.add(device);
+                }*/
                 //Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
                 lvNewDevices.setAdapter(mDeviceListAdapter);
@@ -335,27 +338,43 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String text = intent.getStringExtra("theMessage");
 
-            if (text.contains("status")) {
-                text = text.replace("\"status\"", "");
-                //Log.d(TAG, text);
-                Pattern pattern = Pattern.compile("\"(.*?)\"");
-                Matcher matcher = pattern.matcher(text);
-                if (matcher.find()) {
-                    text = matcher.group();
-                    //messages.append(text + "\n");
-                    ((MapTab) pageradapter.fragment1).setIncomingText(text);
+            Log.d(TAG, "Text: " + text);
+            /* EXPLORE|
+            FFC07F80FE01F800E001800300000000000000000000000000000000000000000007000E001F
+            |000002000800200080000000000000000000000000000000000000000000000000000000000
+            |[2,2]|Left */
+
+            if (text.contains("EXPLORE") || text.contains("DONE")) {
+
+                String statusTag;
+                if (text.contains("EXPLORE")) {
+                    statusTag = "EXPLORE";
+                } else if (text.contains("DONE")) {
+                    statusTag = "REACHED GOAL";
+                } else {
+                    statusTag = "IDLE";
                 }
-            } else if (text.contains("grid")) {
-                text = text.replace("\"grid\"", "");
-                //Log.d(TAG, text);
-                Pattern pattern = Pattern.compile("\"(.*?)\"");
-                Matcher matcher = pattern.matcher(text);
-                if (matcher.find()) {
-                    text = matcher.group();
-                    text = text.replace("\"", "");
-                    Log.d(TAG, text);
-                    ((MapTab) pageradapter.fragment1).setMapObstacles(text);
-                }
+
+                Log.d(TAG, "Status Tag: " + statusTag);
+                ((MapTab) pageradapter.fragment1).setIncomingText(statusTag);
+
+                String[] RPiString = new String[4];
+                String[] coordinates = new String[1];
+
+                //Split the string into multiple parts and save to array
+                RPiString = text.trim().split("\\|+");
+
+                //Remove square brackets and comma
+                coordinates = RPiString[3].replaceAll("\\[", "").replaceAll("\\]", "").trim().split(",");
+
+                ((MapTab) pageradapter.fragment1).setMapExploredObstacles(RPiString[1], RPiString[2]);
+
+                //Row / Column
+                ((MapTab) pageradapter.fragment1).setRobotCoordinates(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
+                ((MapTab) pageradapter.fragment1).setRobotDirection(RPiString[4]);
+
+            } else if (text.contains("FASTEST")) {
+                //Insert Fastest Path code here;
             } else if (text.contains("sendNumberID")) {
                 //example {"sendNumberID":("x, y, NumberID, direction")}
                 text = text.replace("\"sendNumberID\"", "");

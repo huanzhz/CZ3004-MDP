@@ -16,7 +16,8 @@ import androidx.annotation.Nullable;
 public class MapView extends View {
 
     private static final String TAG = "MazeView";
-    private static String MAP_POSITIONS = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    private static String OBSTACLES_POS = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    private static String EXPLORED_POS = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
     private static Cell[][] cells;
     private static final int COLS = 15, ROWS = 20;
     private static final float WALL_THICKNESS = 2;
@@ -32,7 +33,7 @@ public class MapView extends View {
     private static int numberIDCounter = 0;
     public static Canvas mapCanvas;
 
-    private Paint wallPaint, robotPaint, directionPaint, startPaint, goalPaint, gridNumberPaint, waypointPaint, obstaclePaint, unexploredPaint, numberIDPaint;
+    private Paint wallPaint, robotPaint, directionPaint, startPaint, goalPaint, gridNumberPaint, waypointPaint, obstaclePaint, exploredPaint, unexploredPaint, numberIDPaint;
 
     private class Cell {
         float startX, startY, endX, endY;
@@ -67,6 +68,9 @@ public class MapView extends View {
         unexploredPaint = new Paint();
         unexploredPaint.setColor(Color.parseColor("#F5F5F5"));
 
+        exploredPaint = new Paint();
+        exploredPaint.setColor(Color.parseColor("#FF6B6B"));
+
         waypointPaint = new Paint();
         waypointPaint.setColor(Color.parseColor("#FF6B6C"));
 
@@ -97,11 +101,11 @@ public class MapView extends View {
         drawCell(mapCanvas);
         drawGridNumber(mapCanvas);
         drawStartEnd(mapCanvas);
-        initRobot(mapCanvas);
-        initWaypoint(mapCanvas);
-        initObstacles(mapCanvas, MAP_POSITIONS);
-        drawRobotDirection(mapCanvas);
+        initExploredObstacles(mapCanvas, EXPLORED_POS, OBSTACLES_POS);
         drawNumberID(mapCanvas);
+        initWaypoint(mapCanvas);
+        initRobot(mapCanvas);
+        drawRobotDirection(mapCanvas);
         //initGoal(canvas);
 
     }
@@ -345,6 +349,22 @@ public class MapView extends View {
         }
     }
 
+    public void setRobotCoordinates(int col, int row) {
+        //Check if the col and row is within the grid
+        if ((col >= 0 && col <= 14) && (row >= 0 && row <= 19)) {
+            robotCol = col;
+            robotRow = Math.abs(row - 19);
+            //Recycle view
+            invalidate();
+        }
+    }
+
+    public void setRobotDirection(String direction) {
+        robotDirection = direction;
+        //Recycle view
+        invalidate();
+    }
+
     public int[] setWaypointOrRobot(float x, float y) {
         int coordinates[];
         int isWaypoint = 0;
@@ -391,19 +411,23 @@ public class MapView extends View {
             }
             counter++;
         }
-
         return new int[]{cols, row};
     }
 
     //Conversion from Hexadecimal to Decimal to Binary
-    public void setGridMap(String Hex) {
+    public void setMapExploredObstacles(String exploredHex, String obstaclesHex) {
         // 5 Hex digit each time to prevent overflow
         String mdfStringBin = "";
+        String mdfStringBin1 = "";
         String bin = "";
+        String bin1 = "";
         String partial;
+        String partial1;
         int pointer = 0;
-        while (Hex.length() - pointer > 0) {
-            partial = Hex.substring(pointer, pointer + 1);
+        int pointer1 = 0;
+        //Obstacles Part
+        while (obstaclesHex.length() - pointer > 0) {
+            partial = obstaclesHex.substring(pointer, pointer + 1);
             bin = Integer.toBinaryString(Integer.parseInt(partial, 16));
             for (int i = 0; i < 4 - bin.length(); i++) {
                 mdfStringBin = mdfStringBin.concat("0");
@@ -411,35 +435,55 @@ public class MapView extends View {
             mdfStringBin = mdfStringBin.concat(bin);
             pointer += 1;
         }
-        MAP_POSITIONS = mdfStringBin;
+        //Explored Part
+        while (exploredHex.length() - pointer1 > 0) {
+            partial1 = exploredHex.substring(pointer1, pointer1 + 1);
+            bin1 = Integer.toBinaryString(Integer.parseInt(partial1, 16));
+            for (int i = 0; i < 4 - bin1.length(); i++) {
+                mdfStringBin1 = mdfStringBin1.concat("0");
+            }
+            mdfStringBin1 = mdfStringBin1.concat(bin1);
+            pointer1 += 1;
+        }
+
+        OBSTACLES_POS = mdfStringBin;
+        EXPLORED_POS = mdfStringBin1;
         // RecycleView
         invalidate();
     }
 
-    public void initObstacles(Canvas canvas, String binaryInfo) {
-        int binaryStringLength = binaryInfo.length();
-        Log.d(TAG, "Length:" + binaryStringLength);
-        int alphabet;
-        int counter = 0;
-        for (int j = 0; j < ROWS; j++) {
+    public void initExploredObstacles(Canvas canvas, String exploredBinaryInfo, String obstacleBinaryInfo) {
+        //int binaryStringLength = obstacleBinaryInfo.length();
+        //Log.d(TAG, "Length:" + binaryStringLength);
+
+        //Cut the 11 padding top and bottom
+        exploredBinaryInfo = exploredBinaryInfo.substring(2, 302);
+        int obstacleBinary;
+        int exploredBinary;
+        //int counter = 0;
+        for (int j = ROWS - 1; j >= 0; j--) {
             for (int k = 0; k < COLS; k++) {
-                alphabet = (int) binaryInfo.charAt(0);
-                //Log.d(TAG, "Alpha: " + alphabet);
-                binaryInfo = binaryInfo.substring(1);
+                exploredBinary = (int) exploredBinaryInfo.charAt(0);
+                exploredBinaryInfo = exploredBinaryInfo.substring(1);
+                if (exploredBinary == 49) {
+                    //Log.d(TAG, "Check: " + alphabet);
+                    canvas.drawRect(cells[k][j].startX, cells[k][j].startY, cells[k][j].endX, cells[k][j].endY, exploredPaint);
+                }
+
+                obstacleBinary = (int) obstacleBinaryInfo.charAt(0);
+                obstacleBinaryInfo = obstacleBinaryInfo.substring(1);
                 //ASCII for 1 is 49
-                if (alphabet == 49) {
+                if (obstacleBinary == 49) {
                     //Log.d(TAG, "Check: " + alphabet);
                     canvas.drawRect(cells[k][j].startX, cells[k][j].startY, cells[k][j].endX, cells[k][j].endY, obstaclePaint);
                 }
-                counter++;
-                //Log.d(TAG, "Counter:" + counter);
             }
         }
     }
 
     public void drawNumberID(Canvas canvas) {
         if (loadNumberID) {
-            for(int i = 0; i < numberIDCounter; i++){
+            for (int i = 0; i < numberIDCounter; i++) {
                 int x = Integer.parseInt(mapNumberIDString[i][0]);
                 int y = Math.abs(Integer.parseInt(mapNumberIDString[i][1]) - 19);
                 int numberID = Integer.parseInt(mapNumberIDString[i][2]);
@@ -474,7 +518,7 @@ public class MapView extends View {
     }
 
     public void initNumberID(String[] numberIDString) {
-        for(int i = 0; i < numberIDString.length; i++){
+        for (int i = 0; i < numberIDString.length; i++) {
             Log.d(TAG, numberIDString[i]);
             mapNumberIDString[numberIDCounter][i] = numberIDString[i];
         }
