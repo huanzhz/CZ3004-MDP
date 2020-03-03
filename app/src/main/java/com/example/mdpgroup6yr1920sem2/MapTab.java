@@ -32,6 +32,7 @@ public class MapTab extends Fragment {
     ToggleButton waypointBtn;
     Button startBtn;
     Button exploreBtn;
+    Button resetBtn;
     MapView mapView;
     Switch autoManualSwitch;
 
@@ -64,8 +65,9 @@ public class MapTab extends Fragment {
             waypointBtn = (ToggleButton) view.findViewById(R.id.waypointbtn);
             startBtn = (Button) view.findViewById(R.id.startbtn);
             exploreBtn = (Button) view.findViewById(R.id.explorebtn);
+            resetBtn = (Button) view.findViewById(R.id.resetbtn);
             autoManualSwitch = (Switch) view.findViewById(R.id.autoSwitch);
-            autoManualSwitch.setChecked(false);
+            autoManualSwitch.setChecked(true);
 
             // status Messages
             statusMessages = (TextView) view.findViewById(R.id.txtRobotStatus);
@@ -73,8 +75,11 @@ public class MapTab extends Fragment {
             upBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("f").getBytes(Charset.defaultCharset());
+                        byte[] bytes = ("pMANUAL|f").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -82,8 +87,11 @@ public class MapTab extends Fragment {
             leftBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("tl").getBytes(Charset.defaultCharset());
+                        byte[] bytes = ("pMANUAL|l").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -91,8 +99,23 @@ public class MapTab extends Fragment {
             rightBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("tr").getBytes(Charset.defaultCharset());
+                        byte[] bytes = ("pMANUAL|r").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            downBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("pMANUAL|rr").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -103,6 +126,9 @@ public class MapTab extends Fragment {
                         byte[] bytes = ("pFASTEST").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     }
+                    else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -112,15 +138,20 @@ public class MapTab extends Fragment {
                         byte[] bytes = ("pEXPLORE").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     }
+                    else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
-            downBtn.setOnClickListener(new View.OnClickListener() {
+            resetBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("r").getBytes(Charset.defaultCharset());
-                        mainActivityObj.mBluetoothConnection.write(bytes);
+                        //byte[] bytes = ("reset").getBytes(Charset.defaultCharset());
+                        //mainActivityObj.mBluetoothConnection.write(bytes);
                     }
+                    mapView.resetMap();
+                    Toast.makeText(getContext(), "Map Reset!", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -204,11 +235,11 @@ public class MapTab extends Fragment {
         mapView.setMapExploredObstacles(exploredHex, obstaclesHex);
     }
 
-    public void setRobotCoordinates(int col, int row){
+    public void setRobotCoordinates(int col, int row) {
         mapView.setRobotCoordinates(col, row);
     }
 
-    public void setRobotDirection(String direction){
+    public void setRobotDirection(String direction) {
         mapView.setRobotDirection(direction);
     }
 
@@ -236,7 +267,7 @@ public class MapTab extends Fragment {
         }
     }
 
-    public void displayNumberID(String numberIDString){
+    public void displayNumberID(String numberIDString) {
         // 1. x 2. y 3. numberID 4. direction
         numberIDString = numberIDString.trim();
         String[] numberArr = numberIDString.split(",");
@@ -246,7 +277,7 @@ public class MapTab extends Fragment {
     Thread thread = new Thread() {
         @Override
         public void run() {
-            while(!Thread.currentThread().isInterrupted()) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Thread.sleep(500);
                     mainActivityObj.runOnUiThread(new Runnable() {

@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private Toolbar bluetoothToolBar;
     private TextView bluetoothToolBarText;
+    private TextView statusBtn;
 
     private int[] tabIcons = {
             R.drawable.tab_map,
@@ -195,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
         tab2 = (TabItem) findViewById(R.id.Tab2);
         tab3 = (TabItem) findViewById(R.id.Tab3);
         viewPager = findViewById(R.id.viewpager);
+        statusBtn = (TextView) findViewById(R.id.txtRobotStatus);
 
         // For bluetooth status bar
         bluetoothToolBar = (Toolbar) findViewById(R.id.btToolbar);
@@ -338,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String text = intent.getStringExtra("theMessage");
 
-            Log.d(TAG, "Text: " + text);
+            //Log.d(TAG, "Text: " + text);
             /* EXPLORE|
             FFC07F80FE01F800E001800300000000000000000000000000000000000000000007000E001F
             |000002000800200080000000000000000000000000000000000000000000000000000000000
@@ -349,12 +351,14 @@ public class MainActivity extends AppCompatActivity {
                 String statusTag;
                 if (text.contains("EXPLORE")) {
                     statusTag = "EXPLORE";
+                    statusBtn.setText("EXPLORING");
                 } else if (text.contains("DONE")) {
                     statusTag = "REACHED GOAL";
                 } else {
                     statusTag = "IDLE";
                 }
 
+                statusBtn.setText(statusTag);
                 Log.d(TAG, "Status Tag: " + statusTag);
                 ((MapTab) pageradapter.fragment1).setIncomingText(statusTag);
 

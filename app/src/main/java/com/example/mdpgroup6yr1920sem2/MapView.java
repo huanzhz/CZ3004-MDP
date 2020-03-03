@@ -106,7 +106,6 @@ public class MapView extends View {
         initWaypoint(mapCanvas);
         initRobot(mapCanvas);
         drawRobotDirection(mapCanvas);
-        //initGoal(canvas);
 
     }
 
@@ -368,11 +367,11 @@ public class MapView extends View {
     public int[] setWaypointOrRobot(float x, float y) {
         int coordinates[];
         int isWaypoint = 0;
-        Log.d(TAG, "X " + x + " " + "y " + y);
+        //Log.d(TAG, "X " + x + " " + "y " + y);
         coordinates = getSelectedRowCol(x, y);
         int selectedCol = coordinates[0];
         int selectedRow = coordinates[1];
-        Log.d(TAG, "selectedCol " + selectedCol + " " + "selectedRow " + selectedRow);
+        //Log.d(TAG, "selectedCol " + selectedCol + " " + "selectedRow " + selectedRow);
         if (selectedRow >= 0 && selectedCol >= 0) {
             //Check to see if the selected box is not at the first or last row/cols
             if ((selectedCol != 0 && selectedCol != 14) && (selectedRow != 0 && selectedRow != 19)) {
@@ -519,12 +518,30 @@ public class MapView extends View {
 
     public void initNumberID(String[] numberIDString) {
         for (int i = 0; i < numberIDString.length; i++) {
-            Log.d(TAG, numberIDString[i]);
+            //Log.d(TAG, numberIDString[i]);
             mapNumberIDString[numberIDCounter][i] = numberIDString[i];
         }
         numberIDCounter++;
         loadNumberID = true;
         invalidate();
+    }
 
+    public void resetMap() {
+        //Clear Obstacles and Explored
+        OBSTACLES_POS = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+        EXPLORED_POS = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+        //Reset robot
+        robotRow = 18;
+        robotCol = 1;
+        robotDirection = "Top";
+        //Clear waypoint
+        waypointX = 0;
+        waypointY = 0;
+        //Clear Map NumberID
+        loadNumberID = false;
+        mapNumberIDString = new String[15][4];
+        numberIDCounter = 0;
+        //Recycle View
+        invalidate();
     }
 }

@@ -22,7 +22,7 @@
     <string name="btn_waypoint_on">Waypoint On</string>
     <string name="btn_waypoint_off">Waypoint Off</string>
     <string name="btn_update">Update</string>
-    <string name="btn_switch">Manual</string>
+    <string name="btn_switch">Auto</string>
     <string name="btn_switchOn">On</string>
     <string name="btn_switchOff">Off</string>
     <string name="btn_logstatus">Logs</string>
