@@ -12,9 +12,9 @@ public class PageAdapter extends FragmentPagerAdapter {
 
     public PageAdapter(@NonNull FragmentManager fm, int numberoftabs) {
         super(fm);
-        fragment1 = new tab1();
-        fragment2 = new tab2();
-        fragment3 = new tab3();
+        fragment1 = new MapTab();
+        fragment2 = new BluetoothTab();
+        fragment3 = new CommsTab();
         this.numberoftabs = numberoftabs;
     }
 
@@ -30,7 +30,6 @@ public class PageAdapter extends FragmentPagerAdapter {
                 return fragment3;
             default:
                 return null;
-
         }
     }
 

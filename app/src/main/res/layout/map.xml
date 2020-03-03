@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="@color/colorBlue"
-tools:context=".tab1">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlue"
+    tools:context=".MapTab">
 
     <view
         android:id="@+id/idMapView"
         class="com.example.mdpgroup6yr1920sem2.MapView"
         android:layout_width="450dp"
-        android:layout_height="550dp"
+        android:layout_height="520dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,7 +111,7 @@ tools:context=".tab1">
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/txtBTStatus"
+                android:id="@+id/txtLogs"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="10dp"
@@ -123,9 +122,9 @@ tools:context=".tab1">
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/bg_side_btn"
                 android:gravity="center"
-                android:text="@string/btn_btstatus"
+                android:text="@string/btn_logstatus"
                 android:textColor="#000"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toTopOf="@+id/txtRobotStatus"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -149,7 +148,7 @@ tools:context=".tab1">
                 app:layout_constraintBottom_toTopOf="@+id/waypointbtn"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtBTStatus" />
+                app:layout_constraintTop_toBottomOf="@+id/txtLogs" />
 
             <ToggleButton
                 android:id="@+id/waypointbtn"
@@ -157,18 +156,16 @@ tools:context=".tab1">
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/bg_side_toggle"
-                android:textOn="@string/btn_waypoint_on"
                 android:textOff="@string/btn_waypoint_off"
+                android:textOn="@string/btn_waypoint_on"
                 android:theme="@style/SideBarLayout"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtRobotStatus" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -181,9 +178,10 @@ tools:context=".tab1">
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="205dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/btn_update"
             android:scaleType="fitXY"
             android:src="@drawable/reload"
-            android:visibility = "gone"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
             app:layout_constraintStart_toEndOf="@+id/btnTop"
@@ -194,7 +192,6 @@ tools:context=".tab1">
             android:layout_width="80dip"
             android:layout_height="80dip"
             android:layout_marginStart="180dp"
-            android:layout_marginLeft="180dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/btn_left"
             android:scaleType="fitXY"
@@ -224,7 +221,6 @@ tools:context=".tab1">
             android:layout_height="80dip"
             android:layout_marginTop="104dp"
             android:layout_marginEnd="180dp"
-            android:layout_marginRight="180dp"
             android:layout_marginBottom="107dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/btn_right"
@@ -254,17 +250,15 @@ tools:context=".tab1">
             android:layout_height="46dp"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="71dp"
-            android:layout_marginLeft="71dp"
             android:layout_marginEnd="4dp"
-            android:layout_marginRight="4dp"
             android:layout_marginBottom="51dp"
             android:checked="true"
             android:gravity="center"
-            android:text="Auto"
+            android:text="@string/btn_switch"
             android:textColor="#000"
-            android:textOff="Off"
-            android:textOn="On"
-            android:textSize="14sp"
+            android:textOff="@string/btn_switchOff"
+            android:textOn="@string/btn_switchOn"
+            android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/btnRight"
             app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
             app:layout_constraintHorizontal_bias="1.0"
@@ -273,6 +267,4 @@ tools:context=".tab1">
             app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

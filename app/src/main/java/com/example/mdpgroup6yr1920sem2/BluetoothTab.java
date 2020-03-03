@@ -12,28 +12,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import java.nio.charset.Charset;
-
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class tab2 extends Fragment {
+public class BluetoothTab extends Fragment {
 
 
-    public tab2() {
+    public BluetoothTab() {
         // Required empty public constructor
     }
 
     // Variables
     public MainActivity mainActivityObj;
     private View view;
+    ImageView imgRaspberry;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,14 +41,20 @@ public class tab2 extends Fragment {
             mainActivityObj = (MainActivity) getActivity();
 
             // Inflate the layout for this fragment
-            view = inflater.inflate(R.layout.fragment_tab1, container, false);
+            view = inflater.inflate(R.layout.bluetooth, container, false);
 
             Button btnDiscover = (Button) view.findViewById(R.id.btnFindUnpairedDevices);
+             imgRaspberry = (ImageView) view.findViewById(R.id.imgRaspberry);
 
             mainActivityObj.lvNewDevices = (ListView) view.findViewById(R.id.lvNewDevices);
+            mainActivityObj.lvNewDevices.setDivider(null);
+            mainActivityObj.lvNewDevices.setDividerHeight(0);
+
             mainActivityObj.lvNewDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    //clear current list first
+
                     //first cancel discovery because its very memory intensive.
                     mainActivityObj.mBluetoothAdapter.cancelDiscovery();
 
@@ -82,8 +85,12 @@ public class tab2 extends Fragment {
                 @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onClick(View view) {
+                    //Hide raspberry image
+                    imgRaspberry.setVisibility(view.INVISIBLE);
                     //Log.d(TAG, "onClick: enabling/disabling bluetooth.");
                     mainActivityObj.btnDiscover();
+                    //Clear all list items
+                    mainActivityObj.mBTDevices.clear();
                 }
             });
 
