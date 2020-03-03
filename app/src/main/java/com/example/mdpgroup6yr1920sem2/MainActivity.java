@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private Toolbar bluetoothToolBar;
     private TextView bluetoothToolBarText;
-    private TextView statusBtn;
 
     private int[] tabIcons = {
             R.drawable.tab_map,
@@ -92,10 +91,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                mBTDevices.add(device);
-               /* if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
+                //mBTDevices.add(device);
+                if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
                     mBTDevices.add(device);
-                }*/
+                }
                 //Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
                 lvNewDevices.setAdapter(mDeviceListAdapter);
@@ -196,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
         tab2 = (TabItem) findViewById(R.id.Tab2);
         tab3 = (TabItem) findViewById(R.id.Tab3);
         viewPager = findViewById(R.id.viewpager);
-        statusBtn = (TextView) findViewById(R.id.txtRobotStatus);
 
         // For bluetooth status bar
         bluetoothToolBar = (Toolbar) findViewById(R.id.btToolbar);
@@ -350,16 +348,13 @@ public class MainActivity extends AppCompatActivity {
 
                 String statusTag;
                 if (text.contains("EXPLORE")) {
-                    statusTag = "EXPLORE";
-                    statusBtn.setText("EXPLORING");
+                    statusTag = "Robot Status: EXPLORING";
                 } else if (text.contains("DONE")) {
-                    statusTag = "REACHED GOAL";
+                    statusTag = "Robot Status: REACHED GOAL";
                 } else {
-                    statusTag = "IDLE";
+                    statusTag = "Robot Status: IDLE";
                 }
 
-                statusBtn.setText(statusTag);
-                Log.d(TAG, "Status Tag: " + statusTag);
                 ((MapTab) pageradapter.fragment1).setIncomingText(statusTag);
 
                 String[] RPiString = new String[4];
