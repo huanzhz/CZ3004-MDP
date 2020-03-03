@@ -69,7 +69,7 @@ public class MapView extends View {
         unexploredPaint.setColor(Color.parseColor("#F5F5F5"));
 
         exploredPaint = new Paint();
-        exploredPaint.setColor(Color.parseColor("#FF6B6B"));
+        exploredPaint.setColor(Color.parseColor("#97FB98"));
 
         waypointPaint = new Paint();
         waypointPaint.setColor(Color.parseColor("#FF6B6C"));

@@ -111,7 +111,7 @@ public class MapTab extends Fragment {
             downBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("pMANUAL|rr").getBytes(Charset.defaultCharset());
+                        byte[] bytes = ("pMANUAL|b").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     }
                     else {
