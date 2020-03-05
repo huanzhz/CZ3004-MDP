@@ -32,6 +32,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.os.SystemClock;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final int RECONNECT_MAXIMUM_TIMES = 5;
@@ -91,10 +93,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                //mBTDevices.add(device);
-                if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
+                mBTDevices.add(device);
+                /*if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
                     mBTDevices.add(device);
-                }
+                }*/
                 //Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
                 lvNewDevices.setAdapter(mDeviceListAdapter);
@@ -374,6 +376,19 @@ public class MainActivity extends AppCompatActivity {
 
             } else if (text.contains("FASTEST")) {
                 //Insert Fastest Path code here;
+                //FASTEST|flfffffrffffflffrffflfflflffrffffrfffffffffrfffffffflf
+
+                String[] RPiString = new String[1];
+                RPiString = text.trim().split("\\|");
+
+                String[] commands = RPiString[1].trim().split("");
+
+                /*  for(int i = 0; i < commands.length; i++){
+                    Log.d("TAG", "Commands: " + commands[i]);
+                }*/
+
+                ((MapTab) pageradapter.fragment1).runFastestThread(commands);
+                //((MapTab) pageradapter.fragment1).setRobotCoordinates(5,5);
             } else if (text.contains("sendNumberID")) {
                 //example {"sendNumberID":("x, y, NumberID, direction")}
                 text = text.replace("\"sendNumberID\"", "");

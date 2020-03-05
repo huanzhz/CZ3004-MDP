@@ -26,7 +26,7 @@ public class MapView extends View {
     private static float cellSize, hMargin, vMargin;
     private static int robotRow = 18, robotCol = 1;
     private static int waypointX, waypointY;
-    private static String robotDirection = "Top";
+    private static String robotDirection = "Right";
     private static boolean loadNumberID = false;
     //Assume that the numberID loaded on the map will not be more than 15
     private static String[][] mapNumberIDString = new String[15][4];
@@ -348,8 +348,9 @@ public class MapView extends View {
         }
     }
 
-    public void setRobotCoordinates(int col, int row) {
+    public void setRobotCoordinates(int row, int col) {
         //Check if the col and row is within the grid
+        Log.d(TAG, "Row " + row + "Col " + col);
         if ((col >= 0 && col <= 14) && (row >= 0 && row <= 19)) {
             robotCol = col;
             robotRow = Math.abs(row - 19);
@@ -379,10 +380,13 @@ public class MapView extends View {
                     waypointX = selectedCol;
                     waypointY = selectedRow;
                     isWaypoint = 1;
-                } else {
+                }
+                //Disable cos no need to set robot position
+                //To enable it, go to map tab also
+                /*else {
                     robotCol = selectedCol;
                     robotRow = selectedRow;
-                }
+                }*/
             }
         }
         //Recycle view
