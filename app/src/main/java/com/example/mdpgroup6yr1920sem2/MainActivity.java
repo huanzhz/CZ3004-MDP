@@ -1,6 +1,5 @@
 package com.example.mdpgroup6yr1920sem2;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -14,12 +13,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
@@ -28,6 +31,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import android.os.SystemClock;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private Toolbar bluetoothToolBar;
+    private TextView bluetoothToolBarText;
+
     private int[] tabIcons = {
             R.drawable.tab_map,
             R.drawable.tab_bluetooth
@@ -86,6 +94,9 @@ public class MainActivity extends AppCompatActivity {
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mBTDevices.add(device);
+                /*if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
+                    mBTDevices.add(device);
+                }*/
                 //Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
                 lvNewDevices.setAdapter(mDeviceListAdapter);
@@ -106,13 +117,13 @@ public class MainActivity extends AppCompatActivity {
                 //3 cases:
                 //case1: bonded already
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
-                    //Log.d(TAG, "BroadcastReceiver: BOND_BONDED.");
+                    Log.d(TAG, "BroadcastReceiver: BOND_BONDED.");
                     //inside BroadcastReceiver4
                     mBTDevice = mDevice;
                 }
                 //case2: creating a bond
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
-                    //Log.d(TAG, "BroadcastReceiver: BOND_BONDING.");
+                    Log.d(TAG, "BroadcastReceiver: BOND_BONDING.");
                 }
                 //case3: breaking a bond
                 if (mDevice.getBondState() == BluetoothDevice.BOND_NONE) {
@@ -130,10 +141,15 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
+            if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
+                showBluetoothConnected();
+            }
             if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 //Device has disconnected
                 //Log.d(TAG, "Device Disconnected");
                 //reconnect();
+
+                showBluetoothDisconnected();
 
                 // reconnect to the device 5 times
                 if (reconnectCount < RECONNECT_MAXIMUM_TIMES) {
@@ -173,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.tabs);
 
         // For tablayout
         tabLayout = (TabLayout) findViewById(R.id.tablayout);
@@ -181,6 +197,10 @@ public class MainActivity extends AppCompatActivity {
         tab2 = (TabItem) findViewById(R.id.Tab2);
         tab3 = (TabItem) findViewById(R.id.Tab3);
         viewPager = findViewById(R.id.viewpager);
+
+        // For bluetooth status bar
+        bluetoothToolBar = (Toolbar) findViewById(R.id.btToolbar);
+        bluetoothToolBarText = (TextView) findViewById(R.id.bluetoothTextView);
 
         messages = new StringBuilder();
 
@@ -229,6 +249,11 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter disconnectedDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         registerReceiver(mBroadcastReceiver2, disconnectedDevicesIntent);
 
+        //Broadcast when connected
+        IntentFilter connectedDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED);
+        registerReceiver(mBroadcastReceiver2, connectedDevicesIntent);
+
+
         // Set up broadcast for receiving message
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
 
@@ -245,8 +270,20 @@ public class MainActivity extends AppCompatActivity {
      */
     public void startBTConnection(BluetoothDevice device, UUID uuid) {
         //Log.d(TAG, "startBTConnection: Initializing RFCOM Bluetooth Connection.");
-
         mBluetoothConnection.startClient(device, uuid);
+    }
+
+
+    //Added the UI for Bluetooth
+    //Call it in the BluetoothConnectionService to display
+    public void showBluetoothConnected() {
+        bluetoothToolBar.setBackgroundColor(Color.parseColor("#2196F3"));
+        bluetoothToolBarText.setText("Bluetooth: Connected");
+    }
+
+    public void showBluetoothDisconnected() {
+        bluetoothToolBar.setBackgroundColor(Color.parseColor("#6C6D6D"));
+        bluetoothToolBarText.setText("Bluetooth: Not Connected");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -303,29 +340,56 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String text = intent.getStringExtra("theMessage");
 
-            if (text.contains("status")) {
-                text = text.replace("\"status\"", "");
-                //Log.d(TAG, text);
-                Pattern pattern = Pattern.compile("\"(.*?)\"");
-                Matcher matcher = pattern.matcher(text);
-                if (matcher.find()) {
-                    text = matcher.group();
-                    //messages.append(text + "\n");
-                    ((tab1) pageradapter.fragment1).setIncomingText(text);
+            //Log.d(TAG, "Text: " + text);
+            /* EXPLORE|
+            FFC07F80FE01F800E001800300000000000000000000000000000000000000000007000E001F
+            |000002000800200080000000000000000000000000000000000000000000000000000000000
+            |[2,2]|Left */
+
+            if (text.contains("EXPLORE") || text.contains("DONE")) {
+
+                String statusTag;
+                if (text.contains("EXPLORE")) {
+                    statusTag = "Robot Status: EXPLORING";
+                } else if (text.contains("DONE")) {
+                    statusTag = "Robot Status: REACHED GOAL";
+                } else {
+                    statusTag = "Robot Status: IDLE";
                 }
-            } else if (text.contains("grid")) {
-                text = text.replace("\"grid\"", "");
-                //Log.d(TAG, text);
-                Pattern pattern = Pattern.compile("\"(.*?)\"");
-                Matcher matcher = pattern.matcher(text);
-                if (matcher.find()) {
-                    text = matcher.group();
-                    text = text.replace("\"", "");
-                    Log.d(TAG, text);
-                    ((tab1) pageradapter.fragment1).setMapObstacles(text);
-                }
-            }
-            else if(text.contains("sendNumberID")){
+
+                ((MapTab) pageradapter.fragment1).setIncomingText(statusTag);
+
+                String[] RPiString = new String[4];
+                String[] coordinates = new String[1];
+
+                //Split the string into multiple parts and save to array
+                RPiString = text.trim().split("\\|+");
+
+                //Remove square brackets and comma
+                coordinates = RPiString[3].replaceAll("\\[", "").replaceAll("\\]", "").trim().split(",");
+
+                ((MapTab) pageradapter.fragment1).setMapExploredObstacles(RPiString[1], RPiString[2]);
+
+                //Row / Column
+                ((MapTab) pageradapter.fragment1).setRobotCoordinates(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
+                ((MapTab) pageradapter.fragment1).setRobotDirection(RPiString[4]);
+
+            } else if (text.contains("FASTEST")) {
+                //Insert Fastest Path code here;
+                //FASTEST|flfffffrffffflffrffflfflflffrffffrfffffffffrfffffffflf
+
+                String[] RPiString = new String[1];
+                RPiString = text.trim().split("\\|");
+
+                String[] commands = RPiString[1].trim().split("");
+
+                /*  for(int i = 0; i < commands.length; i++){
+                    Log.d("TAG", "Commands: " + commands[i]);
+                }*/
+
+                ((MapTab) pageradapter.fragment1).runFastestThread(commands);
+                //((MapTab) pageradapter.fragment1).setRobotCoordinates(5,5);
+            } else if (text.contains("sendNumberID")) {
                 //example {"sendNumberID":("x, y, NumberID, direction")}
                 text = text.replace("\"sendNumberID\"", "");
                 Pattern pattern = Pattern.compile("\"(.*?)\"");
@@ -334,12 +398,11 @@ public class MainActivity extends AppCompatActivity {
                     text = matcher.group();
                     text = text.replace("\"", "");
                     Log.d(TAG, text);
-                    ((tab1) pageradapter.fragment1).displayNumberID(text);
+                    ((MapTab) pageradapter.fragment1).displayNumberID(text);
                 }
-            }
-            else {
+            } else {
                 messages.append(text + "\n");
-                ((tab3) pageradapter.fragment3).setIncomingText(messages);
+                ((CommsTab) pageradapter.fragment3).setIncomingText(messages);
             }
         }
     };

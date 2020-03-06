@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.util.UUID;
 
 public class BluetoothConnectionService {
+
     private static final String TAG = "BluetoothConnectionServ";
 
     private static final String appName = "MYAPP";
@@ -316,6 +317,7 @@ public class BluetoothConnectionService {
         //Log.d(TAG, "connected: Starting.");
         Message msg = new Message();
         msg.obj = "Connected";
+
         handler.sendMessage(msg);
 
         // Set bluetooth to true

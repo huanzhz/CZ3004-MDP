@@ -2,10 +2,12 @@ package com.example.mdpgroup6yr1920sem2;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -30,13 +32,16 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice> {
 
         if (device != null) {
             TextView deviceName = (TextView) convertView.findViewById(R.id.tvDeviceName);
-            TextView deviceAdress = (TextView) convertView.findViewById(R.id.tvDeviceAddress);
+            TextView deviceAddress = (TextView) convertView.findViewById(R.id.tvDeviceAddress);
 
-            if (deviceName != null) {
+            if (device.getName() != null) {
                 deviceName.setText(device.getName());
             }
-            if (deviceAdress != null) {
-                deviceAdress.setText(device.getAddress());
+            else{
+                deviceName.setText("Device");
+            }
+            if (deviceAddress != null) {
+                deviceAddress.setText(device.getAddress());
             }
         }
 

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#41B3AA"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".MapTab">
+    <!-- another color #17A398-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bt_card">
+
+        <TextView
+            android:id="@+id/txtBTHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="@string/txt_btHeaderText"
+            android:textColor="#C41C4A"
+            android:textSize="24sp" />
+
+        <ListView
+            android:id="@+id/lvNewDevices"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:layout_below="@+id/txtBTHeader"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp" >
+        </ListView>
+
+        <ImageView
+            android:id="@+id/imgRaspberry"
+            android:layout_below="@+id/txtBTHeader"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="140dp"
+            android:layout_width="200dp"
+            android:layout_height="256dp"
+            android:src="@drawable/raspberry" />
+
+        <Button
+            android:id="@+id/btnFindUnpairedDevices"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="120dp"
+            android:background="@drawable/bg_btn_ripple"
+            android:text="@string/btn_discover"
+            android:textColor="#FFFFFF" />
+    </RelativeLayout>
+
+
+</FrameLayout>

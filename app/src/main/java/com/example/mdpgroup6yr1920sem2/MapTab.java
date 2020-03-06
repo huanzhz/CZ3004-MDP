@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ToggleButton;
 import android.widget.Switch;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.CompoundButton;
 import android.util.Log;
+import android.os.Handler;
 
 import java.nio.charset.Charset;
 
@@ -22,22 +24,29 @@ import java.nio.charset.Charset;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class tab1 extends Fragment {
+public class MapTab extends Fragment {
     ImageButton upBtn;
     ImageButton leftBtn;
     ImageButton downBtn;
     ImageButton rightBtn;
     ImageButton updateBtn;
     ToggleButton waypointBtn;
+    Button startBtn;
+    Button exploreBtn;
+    Button resetBtn;
     MapView mapView;
     Switch autoManualSwitch;
 
     private static final String TAG = "Tab1";
+    private int Fastest_Row = 1, Fastest_Col = 1, Fastest_Count = 0;
+    private String Fastest_Direction = "Right";
+    private String[] Fastest_Commands = new String[150];
     public MainActivity mainActivityObj;
     private View view;
     private TextView statusMessages;
+    Handler handler = new Handler();
 
-    public tab1() {
+    public MapTab() {
         // Required empty public constructor
     }
 
@@ -59,8 +68,11 @@ public class tab1 extends Fragment {
             downBtn = (ImageButton) view.findViewById(R.id.btnBottom);
             updateBtn = (ImageButton) view.findViewById(R.id.btnUpdateMap);
             waypointBtn = (ToggleButton) view.findViewById(R.id.waypointbtn);
+            startBtn = (Button) view.findViewById(R.id.startbtn);
+            exploreBtn = (Button) view.findViewById(R.id.explorebtn);
+            resetBtn = (Button) view.findViewById(R.id.resetbtn);
             autoManualSwitch = (Switch) view.findViewById(R.id.autoSwitch);
-            autoManualSwitch.setChecked(false);
+            autoManualSwitch.setChecked(true);
 
             // status Messages
             statusMessages = (TextView) view.findViewById(R.id.txtRobotStatus);
@@ -68,8 +80,10 @@ public class tab1 extends Fragment {
             upBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("f").getBytes(Charset.defaultCharset());
+                        byte[] bytes = ("pMANUAL|f").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
+                    } else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -77,8 +91,10 @@ public class tab1 extends Fragment {
             leftBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("tl").getBytes(Charset.defaultCharset());
+                        byte[] bytes = ("pMANUAL|l").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
+                    } else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -86,8 +102,10 @@ public class tab1 extends Fragment {
             rightBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("tr").getBytes(Charset.defaultCharset());
+                        byte[] bytes = ("pMANUAL|r").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
+                    } else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -95,9 +113,44 @@ public class tab1 extends Fragment {
             downBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("r").getBytes(Charset.defaultCharset());
+                        byte[] bytes = ("pMANUAL|b").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
+                    } else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
                     }
+                }
+            });
+
+            startBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("pFASTEST").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    } else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            exploreBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("pEXPLORE").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    } else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            resetBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
+                        //byte[] bytes = ("reset").getBytes(Charset.defaultCharset());
+                        //mainActivityObj.mBluetoothConnection.write(bytes);
+                    }
+                    mapView.resetMap();
+                    Toast.makeText(getContext(), "Map Reset!", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -162,9 +215,12 @@ public class tab1 extends Fragment {
                     if (isWaypoint == 1) {
                         sendWaypointCoordinates(col, row);
 
-                    } else {
-                        sendRobotCoordinates(col, row);
                     }
+                    //Disable cos no need to set robot position
+                    //To enable it, go to mapview also
+                    /*else {
+                        //sendRobotCoordinates(col, row);
+                    }*/
                     return false;
                 }
             });
@@ -177,13 +233,21 @@ public class tab1 extends Fragment {
         statusMessages.setText(yourText);
     }
 
-    public void setMapObstacles(String hexString) {
-        mapView.setGridMap(hexString);
+    public void setMapExploredObstacles(String exploredHex, String obstaclesHex) {
+        mapView.setMapExploredObstacles(exploredHex, obstaclesHex);
+    }
+
+    public void setRobotCoordinates(int row, int col) {
+        mapView.setRobotCoordinates(row, col);
+    }
+
+    public void setRobotDirection(String direction) {
+        mapView.setRobotDirection(direction);
     }
 
     public void sendWaypointCoordinates(int col, int row) {
         if (mainActivityObj.mBluetoothConnection != null) {
-            String waypointMessage = "Waypoint at (" + col + "," + row + ")";
+            String waypointMessage = "p|WAYPOINT|" + row + "|" + col;
             byte[] bytes = waypointMessage.getBytes(Charset.defaultCharset());
             mainActivityObj.mBluetoothConnection.write(bytes);
         }
@@ -205,17 +269,86 @@ public class tab1 extends Fragment {
         }
     }
 
-    public void displayNumberID(String numberIDString){
+    public void displayNumberID(String numberIDString) {
         // 1. x 2. y 3. numberID 4. direction
         numberIDString = numberIDString.trim();
         String[] numberArr = numberIDString.split(",");
         mapView.initNumberID(numberArr);
     }
 
-    Thread thread = new Thread() {
+    public void runFastestThread(String[] commands) {
+        Fastest_Col = 1;
+        Fastest_Row = 1;
+        Fastest_Count = 1;
+        Fastest_Direction = "Right";
+        Fastest_Commands = commands;
+        handler.post(runnable);
+    }
+
+    final Runnable runnable = new Runnable() {
+        public void run() {
+            if (Fastest_Count++ < Fastest_Commands.length - 1) {
+                //FASTEST|rflf
+                Log.d("TAG", "Count: " + Fastest_Count);
+
+                if (Fastest_Commands[Fastest_Count].charAt(0) == 'f') {
+                    if (Fastest_Direction.contains("Top")) {
+                        Log.d(TAG, "Test");
+                        Fastest_Row = Fastest_Row + 1;
+                        setRobotCoordinates(Fastest_Row, Fastest_Col);
+                    } else if (Fastest_Direction.contains("Left")) {
+                        Log.d(TAG, "Test1");
+                        Fastest_Col = Fastest_Col - 1;
+                        setRobotCoordinates(Fastest_Row, Fastest_Col);
+                    } else if (Fastest_Direction.contains("Right")) {
+                        Log.d(TAG, "Test2");
+                        Fastest_Col = Fastest_Col + 1;
+                        setRobotCoordinates(Fastest_Row, Fastest_Col);
+                    } else {
+                    }
+                } else if (Fastest_Commands[Fastest_Count].charAt(0) == 'l') {
+                    if (Fastest_Direction.contains("Top")) {
+                        Fastest_Direction = "Left";
+                        setRobotDirection("Left");
+                    } else if (Fastest_Direction.contains("Right")) {
+                        Fastest_Direction = "Top";
+                        setRobotDirection("Top");
+                    } else if (Fastest_Direction.contains("Left")) {
+                        Fastest_Direction = "Down";
+                        setRobotDirection("Down");
+                    } else {
+                        // if(Fastest_Direction.contains("Down"))
+                        Fastest_Direction = "Right";
+                        setRobotDirection("Right");
+                    }
+                } else if (Fastest_Commands[Fastest_Count].charAt(0) == 'r') {
+                    if (Fastest_Direction.contains("Top")) {
+                        Fastest_Direction = "Right";
+                        setRobotDirection("Right");
+                    } else if (Fastest_Direction.contains("Right")) {
+                        Fastest_Direction = "Down";
+                        setRobotDirection("Down");
+                    } else if (Fastest_Direction.contains("Left")) {
+                        Fastest_Direction = "Top";
+                        setRobotDirection("Top");
+                    } else {
+                        // if(Fastest_Direction.contains("Down"))
+                        Fastest_Direction = "Left";
+                        setRobotDirection("Left");
+                    }
+                }
+                else{
+                    //Do Nothing
+                }
+                handler.postDelayed(this, 500);
+            }
+        }
+    };
+
+            Thread thread = new Thread() {
         @Override
         public void run() {
-            while(!Thread.currentThread().isInterrupted()) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Thread.sleep(500);
                     mainActivityObj.runOnUiThread(new Runnable() {
