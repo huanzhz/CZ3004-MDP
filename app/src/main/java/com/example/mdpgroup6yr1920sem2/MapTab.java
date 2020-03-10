@@ -1,5 +1,9 @@
 package com.example.mdpgroup6yr1920sem2;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -24,7 +28,7 @@ import java.nio.charset.Charset;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapTab extends Fragment {
+public class MapTab extends Fragment implements SensorEventListener {
     ImageButton upBtn;
     ImageButton leftBtn;
     ImageButton downBtn;
@@ -34,6 +38,8 @@ public class MapTab extends Fragment {
     Button startBtn;
     Button exploreBtn;
     Button resetBtn;
+    Button caliFrontBtn;
+    Button caliRightBtn;
     MapView mapView;
     Switch autoManualSwitch;
 
@@ -46,6 +52,10 @@ public class MapTab extends Fragment {
     private TextView statusMessages;
     Handler handler = new Handler();
 
+    //Accelerometer
+    private Sensor mySensor;
+    private SensorManager SM;
+
     public MapTab() {
         // Required empty public constructor
     }
@@ -54,6 +64,12 @@ public class MapTab extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (view == null) {
+
+            //Accelerometer
+            SM = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
+            // Accelerometer Sensor
+            mySensor = SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            SM.registerListener(this, mySensor, SensorManager.SENSOR_DELAY_NORMAL);
 
             // Inflate the layout for this fragment
             mainActivityObj = (MainActivity) getActivity();
@@ -71,6 +87,9 @@ public class MapTab extends Fragment {
             startBtn = (Button) view.findViewById(R.id.startbtn);
             exploreBtn = (Button) view.findViewById(R.id.explorebtn);
             resetBtn = (Button) view.findViewById(R.id.resetbtn);
+            //Temp
+            caliFrontBtn = (Button) view.findViewById(R.id.calFront);
+            caliRightBtn = (Button) view.findViewById(R.id.calRight);
             autoManualSwitch = (Switch) view.findViewById(R.id.autoSwitch);
             autoManualSwitch.setChecked(true);
 
@@ -80,7 +99,9 @@ public class MapTab extends Fragment {
             upBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("pMANUAL|f").getBytes(Charset.defaultCharset());
+                        //pMANUAL|f
+                        //Log.d(TAG, "hf\n");
+                        byte[] bytes = ("hf\n").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     } else {
                         Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
@@ -91,7 +112,8 @@ public class MapTab extends Fragment {
             leftBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("pMANUAL|l").getBytes(Charset.defaultCharset());
+                        //"pMANUAL|l
+                        byte[] bytes = ("hl\n").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     } else {
                         Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
@@ -102,7 +124,8 @@ public class MapTab extends Fragment {
             rightBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("pMANUAL|r").getBytes(Charset.defaultCharset());
+                        //pMANUAL|r
+                        byte[] bytes = ("hr\n").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     } else {
                         Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
@@ -113,7 +136,31 @@ public class MapTab extends Fragment {
             downBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mainActivityObj.mBluetoothConnection != null) {
-                        byte[] bytes = ("pMANUAL|b").getBytes(Charset.defaultCharset());
+                        //pMANUAL|b
+                        byte[] bytes = ("hb\n").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    } else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            //temp
+            caliFrontBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("ho\n").getBytes(Charset.defaultCharset());
+                        mainActivityObj.mBluetoothConnection.write(bytes);
+                    } else {
+                        Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            caliRightBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (mainActivityObj.mBluetoothConnection != null) {
+                        byte[] bytes = ("hi\n").getBytes(Charset.defaultCharset());
                         mainActivityObj.mBluetoothConnection.write(bytes);
                     } else {
                         Toast.makeText(getContext(), "Bluetooth not connected!", Toast.LENGTH_SHORT).show();
@@ -336,8 +383,7 @@ public class MapTab extends Fragment {
                         Fastest_Direction = "Left";
                         setRobotDirection("Left");
                     }
-                }
-                else{
+                } else {
                     //Do Nothing
                 }
                 handler.postDelayed(this, 500);
@@ -345,7 +391,7 @@ public class MapTab extends Fragment {
         }
     };
 
-            Thread thread = new Thread() {
+    Thread thread = new Thread() {
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
@@ -365,4 +411,20 @@ public class MapTab extends Fragment {
             }
         }
     };
+
+    public void onSensorChanged(SensorEvent event) {
+        if (event.values[1] < -2 && (event.values[0] >= -2 || event.values[0] <= 2)) {
+            Log.d(TAG, "Forward");
+        } else if (event.values[0] > 6 && (event.values[1] >= -2 || event.values[1] <= 2)) {
+            Log.d(TAG, "Left");
+        } else if (event.values[0] < -6 && (event.values[1] >= -2 || event.values[1] <= 2)) {
+            Log.d(TAG, "Right");
+        } else if (event.values[1] < 10 && (event.values[0] >= -2 || event.values[0] <= 2)) {
+            Log.d(TAG, "Back");
+        }
+    }
+
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
 }
