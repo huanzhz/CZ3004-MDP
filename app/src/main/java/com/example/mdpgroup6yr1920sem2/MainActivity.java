@@ -374,6 +374,9 @@ public class MainActivity extends AppCompatActivity {
                 ((MapTab) pageradapter.fragment1).setRobotCoordinates(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
                 ((MapTab) pageradapter.fragment1).setRobotDirection(RPiString[4]);
 
+                messages.append(text + "\n");
+                ((CommsTab) pageradapter.fragment3).setIncomingText(messages);
+
             } else if (text.contains("FASTEST")) {
                 //Insert Fastest Path code here;
                 //FASTEST|flfffffrffffflffrffflfflflffrffffrfffffffffrfffffffflf
