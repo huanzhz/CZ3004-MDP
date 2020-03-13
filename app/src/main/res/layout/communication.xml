@@ -7,6 +7,7 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
+    android:background="#5AB1BB"
     tools:context=".CommsTab">
 
     <RelativeLayout
@@ -21,7 +22,9 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
             android:hint="@string/enter_text_here" />
 
         <Button
@@ -29,6 +32,8 @@
             android:text="@string/send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/bg_side_btn"
             android:theme="@style/SideBarLayout"
             android:layout_below="@+id/lvNewDevices"

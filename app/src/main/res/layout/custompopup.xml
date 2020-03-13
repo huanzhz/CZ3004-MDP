@@ -4,7 +4,7 @@
     android:layout_width="450dp"
     android:layout_height="475dp"
     android:layout_gravity="center"
-    android:background="@color/cardview_dark_background">
+    android:background="#5AB1BB">
 
     <Button
         android:id="@+id/btnSave"
@@ -16,6 +16,8 @@
         android:layout_marginStart="47dp"
         android:layout_marginTop="370dp"
         android:layout_marginEnd="272dp"
+        android:background="@drawable/bg_side_btn"
+        android:theme="@style/SideBarLayout"
         android:text="@string/btn_save" />
 
     <Button
@@ -28,6 +30,8 @@
         android:layout_marginStart="259dp"
         android:layout_marginTop="371dp"
         android:layout_marginEnd="60dp"
+        android:background="@drawable/bg_side_btn"
+        android:theme="@style/SideBarLayout"
         android:text="@string/btn_cancel" />
 
 
