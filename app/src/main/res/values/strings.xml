@@ -21,6 +21,8 @@
     <string name="btn_reset">Reset</string>
     <string name="btn_waypoint_on">Waypoint On</string>
     <string name="btn_waypoint_off">Waypoint Off</string>
+    <string name="btn_tilt_on">Tilt On</string>
+    <string name="btn_tilt_off">Tilt Off</string>
     <string name="btn_update">Update</string>
     <string name="btn_switch">Auto</string>
     <string name="btn_switchOn">On</string>

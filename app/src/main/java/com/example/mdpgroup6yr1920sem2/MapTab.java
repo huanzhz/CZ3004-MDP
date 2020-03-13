@@ -35,6 +35,7 @@ public class MapTab extends Fragment implements SensorEventListener {
     ImageButton rightBtn;
     ImageButton updateBtn;
     ToggleButton waypointBtn;
+    ToggleButton tiltBtn;
     Button startBtn;
     Button exploreBtn;
     Button resetBtn;
@@ -55,6 +56,7 @@ public class MapTab extends Fragment implements SensorEventListener {
     //Accelerometer
     private Sensor mySensor;
     private SensorManager SM;
+    private boolean tiltStatus = false;
 
     public MapTab() {
         // Required empty public constructor
@@ -87,6 +89,7 @@ public class MapTab extends Fragment implements SensorEventListener {
             startBtn = (Button) view.findViewById(R.id.startbtn);
             exploreBtn = (Button) view.findViewById(R.id.explorebtn);
             resetBtn = (Button) view.findViewById(R.id.resetbtn);
+            tiltBtn = (ToggleButton) view.findViewById(R.id.tiltBtn);
             //Temp
             caliFrontBtn = (Button) view.findViewById(R.id.calFront);
             caliRightBtn = (Button) view.findViewById(R.id.calRight);
@@ -245,6 +248,18 @@ public class MapTab extends Fragment implements SensorEventListener {
                         MainActivity.wayPointChecked = false;
                     }
                     Toast.makeText(getContext(), "Waypoint button pressed!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            tiltBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (tiltBtn.isChecked()) {
+                        tiltStatus = true;
+                    } else {
+                        tiltStatus = false;
+                    }
+                    Toast.makeText(getContext(), "Tilt button pressed!", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -413,14 +428,32 @@ public class MapTab extends Fragment implements SensorEventListener {
     };
 
     public void onSensorChanged(SensorEvent event) {
-        if (event.values[1] < -2 && (event.values[0] >= -2 || event.values[0] <= 2)) {
-            Log.d(TAG, "Forward");
-        } else if (event.values[0] > 6 && (event.values[1] >= -2 || event.values[1] <= 2)) {
-            Log.d(TAG, "Left");
-        } else if (event.values[0] < -6 && (event.values[1] >= -2 || event.values[1] <= 2)) {
-            Log.d(TAG, "Right");
-        } else if (event.values[1] < 10 && (event.values[0] >= -2 || event.values[0] <= 2)) {
-            Log.d(TAG, "Back");
+        if(tiltStatus) {
+            if (event.values[1] < -2 && (event.values[0] >= -2 || event.values[0] <= 2)) {
+                if (mainActivityObj.mBluetoothConnection != null) {
+                    String robotMessage = "f";
+                    byte[] bytes = robotMessage.getBytes(Charset.defaultCharset());
+                    mainActivityObj.mBluetoothConnection.write(bytes);
+                }
+            } else if (event.values[0] > 6 && (event.values[1] >= -2 || event.values[1] <= 2)) {
+                if (mainActivityObj.mBluetoothConnection != null) {
+                    String robotMessage = "sl";
+                    byte[] bytes = robotMessage.getBytes(Charset.defaultCharset());
+                    mainActivityObj.mBluetoothConnection.write(bytes);
+                }
+            } else if (event.values[0] < -6 && (event.values[1] >= -2 || event.values[1] <= 2)) {
+                if (mainActivityObj.mBluetoothConnection != null) {
+                    String robotMessage = "sr";
+                    byte[] bytes = robotMessage.getBytes(Charset.defaultCharset());
+                    mainActivityObj.mBluetoothConnection.write(bytes);
+                }
+            } else if (event.values[1] < 10 && (event.values[0] >= -2 || event.values[0] <= 2)) {
+                if (mainActivityObj.mBluetoothConnection != null) {
+                    String robotMessage = "r";
+                    byte[] bytes = robotMessage.getBytes(Charset.defaultCharset());
+                    mainActivityObj.mBluetoothConnection.write(bytes);
+                }
+            }
         }
     }
 
