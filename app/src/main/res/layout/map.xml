@@ -101,6 +101,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
             android:layout_width="100dp"
             android:layout_height="290dp"
             android:background="@drawable/bg_menu_left"
@@ -198,13 +199,14 @@
             android:src="@drawable/leftbtn"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.395" />
 
         <ImageButton
             android:id="@+id/btnBottom"
             android:layout_width="80dip"
             android:layout_height="80dip"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="60dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/btn_down"
             android:scaleType="fitXY"
@@ -219,9 +221,8 @@
             android:id="@+id/btnRight"
             android:layout_width="80dip"
             android:layout_height="80dip"
-            android:layout_marginTop="104dp"
+            android:layout_marginTop="80dp"
             android:layout_marginEnd="180dp"
-            android:layout_marginBottom="107dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/btn_right"
             android:scaleType="fitXY"
@@ -235,7 +236,7 @@
             android:id="@+id/btnTop"
             android:layout_width="80dip"
             android:layout_height="80dip"
-            android:layout_marginTop="44dp"
+            android:layout_marginTop="30dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/btn_up"
             android:scaleType="fitXY"
@@ -266,5 +267,49 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
+        <Button
+            android:id="@+id/calFront"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="30dp"
+            android:text="Cali-Front"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnBottom"
+            app:layout_constraintHorizontal_bias="0.75"
+            app:layout_constraintStart_toEndOf="@+id/constraintLayout2"
+            app:layout_constraintTop_toBottomOf="@+id/btnLeft"
+            app:layout_constraintVertical_bias="0.75" />
+
+        <Button
+            android:id="@+id/calFront2"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="10dp"
+            android:text="Cali-Front2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/calRight"
+            app:layout_constraintStart_toEndOf="@+id/calFront"
+            app:layout_constraintTop_toBottomOf="@+id/btnBottom" />
+
+        <Button
+            android:id="@+id/calRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="5dp"
+            android:text="Cali-Right"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/btnBottom"
+            app:layout_constraintTop_toBottomOf="@+id/btnRight"
+            app:layout_constraintVertical_bias="0.864" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
