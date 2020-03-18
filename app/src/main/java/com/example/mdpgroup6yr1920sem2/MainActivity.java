@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothAdapter mBluetoothAdapter;
     BluetoothConnectionService mBluetoothConnection;
 
-    StringBuilder messages;
+    StringBuilder messages, mdf_messages;
 
     private static final UUID MY_UUID_INSECURE = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
         bluetoothToolBarText = (TextView) findViewById(R.id.bluetoothTextView);
 
         messages = new StringBuilder();
+        mdf_messages = new StringBuilder();
 
         myReconfigureDialog = new Dialog(this);
 
@@ -376,6 +377,16 @@ public class MainActivity extends AppCompatActivity {
 
                 messages.append(text + "\n");
                 ((CommsTab) pageradapter.fragment3).setIncomingText(messages);
+
+                mdf_messages.setLength(0);
+                mdf_messages.append(RPiString[2]);
+                ((CommsTab) pageradapter.fragment3).setMDFText(mdf_messages);
+
+                /*
+                if (text.contains("DONE")) {
+                    // display the mdf string
+                }
+                */
 
             } else if (text.contains("FASTEST")) {
                 //Insert Fastest Path code here;

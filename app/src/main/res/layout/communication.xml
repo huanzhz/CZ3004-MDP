@@ -111,6 +111,30 @@
             android:layout_marginEnd="174dp"
             android:text="@string/btn_reconfigure" />
 
+        <TextView
+            android:id="@+id/mdfStaticText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/scrollViewForMessage"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="MDFString-"
+            android:textSize="16dp"
+            android:theme="@style/SideBarLayout"/>
+
+        <TextView
+            android:id="@+id/mdfText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/scrollViewForMessage"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="10dp"
+            android:layout_toEndOf="@+id/mdfStaticText"
+            android:background="#FFFFFF"
+            android:text="000000000000000000000000000000000000000000000000000000000000000000000000000" />
+
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
