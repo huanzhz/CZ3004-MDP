@@ -35,7 +35,7 @@ public class CommsTab extends Fragment {
     }
 
     public MainActivity mainActivityObj;
-    private TextView incomingMessages;
+    private TextView incomingMessages, mdfMessage;
     private View view;
     private String oldF1text, oldF2text;
     private String newF1text, newF2text;
@@ -158,6 +158,7 @@ public class CommsTab extends Fragment {
 
             // Receive Messages
             incomingMessages = (TextView) view.findViewById(R.id.incomingMessage);
+            mdfMessage = (TextView) view.findViewById(R.id.mdfText);
 
             loadData();
             updateViews(oldF1text, oldF2text);
@@ -170,6 +171,9 @@ public class CommsTab extends Fragment {
      */
     public void setIncomingText(StringBuilder yourText){
         incomingMessages.setText(yourText);
+    }
+    public void setMDFText(StringBuilder yourText){
+        mdfMessage.setText(yourText);
     }
 
     public void saveData(String newTextF1, String newTextF2) {
@@ -189,7 +193,7 @@ public class CommsTab extends Fragment {
 
     public void loadData() {
         SharedPreferences sharedPreferences = mainActivityObj.getApplicationContext().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        oldF1text = sharedPreferences.getString(TEXT_F1, "");
+        oldF1text = sharedPreferences.getString(TEXT_F1, "pCALIBRATE");
         oldF2text = sharedPreferences.getString(TEXT_F2, "");
     }
 

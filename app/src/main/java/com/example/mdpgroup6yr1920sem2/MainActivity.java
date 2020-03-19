@@ -32,6 +32,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.os.SystemClock;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final int RECONNECT_MAXIMUM_TIMES = 5;
@@ -43,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private Toolbar bluetoothToolBar;
     private TextView bluetoothToolBarText;
-    private TextView statusBtn;
 
     private int[] tabIcons = {
             R.drawable.tab_map,
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothAdapter mBluetoothAdapter;
     BluetoothConnectionService mBluetoothConnection;
 
-    StringBuilder messages;
+    StringBuilder messages, mdf_messages;
 
     private static final UUID MY_UUID_INSECURE = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mBTDevices.add(device);
-               /* if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
+                /*if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
                     mBTDevices.add(device);
                 }*/
                 //Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
@@ -196,13 +197,13 @@ public class MainActivity extends AppCompatActivity {
         tab2 = (TabItem) findViewById(R.id.Tab2);
         tab3 = (TabItem) findViewById(R.id.Tab3);
         viewPager = findViewById(R.id.viewpager);
-        statusBtn = (TextView) findViewById(R.id.txtRobotStatus);
 
         // For bluetooth status bar
         bluetoothToolBar = (Toolbar) findViewById(R.id.btToolbar);
         bluetoothToolBarText = (TextView) findViewById(R.id.bluetoothTextView);
 
         messages = new StringBuilder();
+        mdf_messages = new StringBuilder();
 
         myReconfigureDialog = new Dialog(this);
 
@@ -350,16 +351,13 @@ public class MainActivity extends AppCompatActivity {
 
                 String statusTag;
                 if (text.contains("EXPLORE")) {
-                    statusTag = "EXPLORE";
-                    statusBtn.setText("EXPLORING");
+                    statusTag = "Robot Status: EXPLORING";
                 } else if (text.contains("DONE")) {
-                    statusTag = "REACHED GOAL";
+                    statusTag = "Robot Status: REACHED GOAL";
                 } else {
-                    statusTag = "IDLE";
+                    statusTag = "Robot Status: IDLE";
                 }
 
-                statusBtn.setText(statusTag);
-                Log.d(TAG, "Status Tag: " + statusTag);
                 ((MapTab) pageradapter.fragment1).setIncomingText(statusTag);
 
                 String[] RPiString = new String[4];
@@ -377,8 +375,34 @@ public class MainActivity extends AppCompatActivity {
                 ((MapTab) pageradapter.fragment1).setRobotCoordinates(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
                 ((MapTab) pageradapter.fragment1).setRobotDirection(RPiString[4]);
 
+                messages.append(text + "\n");
+                ((CommsTab) pageradapter.fragment3).setIncomingText(messages);
+
+                mdf_messages.setLength(0);
+                mdf_messages.append(RPiString[2]);
+                ((CommsTab) pageradapter.fragment3).setMDFText(mdf_messages);
+
+                /*
+                if (text.contains("DONE")) {
+                    // display the mdf string
+                }
+                */
+
             } else if (text.contains("FASTEST")) {
                 //Insert Fastest Path code here;
+                //FASTEST|flfffffrffffflffrffflfflflffrffffrfffffffffrfffffffflf
+
+                String[] RPiString = new String[1];
+                RPiString = text.trim().split("\\|");
+
+                String[] commands = RPiString[1].trim().split("");
+
+                /*  for(int i = 0; i < commands.length; i++){
+                    Log.d("TAG", "Commands: " + commands[i]);
+                }*/
+
+                ((MapTab) pageradapter.fragment1).runFastestThread(commands);
+                //((MapTab) pageradapter.fragment1).setRobotCoordinates(5,5);
             } else if (text.contains("sendNumberID")) {
                 //example {"sendNumberID":("x, y, NumberID, direction")}
                 text = text.replace("\"sendNumberID\"", "");
