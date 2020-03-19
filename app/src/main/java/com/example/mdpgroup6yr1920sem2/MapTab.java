@@ -325,7 +325,7 @@ public class MapTab extends Fragment {
     public void runFastestThread(String[] commands) {
         Fastest_Col = 1;
         Fastest_Row = 1;
-        Fastest_Count = 1;
+        Fastest_Count = 0;
         Fastest_Direction = "Right";
         Fastest_Commands = commands;
         handler.post(runnable);

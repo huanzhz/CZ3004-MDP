@@ -94,7 +94,8 @@ public class MainActivity extends AppCompatActivity {
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mBTDevices.add(device);
-                /*if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
+                /*
+                if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
                     mBTDevices.add(device);
                 }*/
                 //Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
