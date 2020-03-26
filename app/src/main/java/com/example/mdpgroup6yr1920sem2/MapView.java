@@ -264,16 +264,16 @@ public class MapView extends View {
         Drawable imageResource;
         switch (numberID) {
             case 1:
-                imageResource = getResources().getDrawable(R.drawable.upbtn, null);
+                imageResource = getResources().getDrawable(R.drawable.up, null);
                 return imageResource;
             case 2:
-                imageResource = getResources().getDrawable(R.drawable.downbtn, null);
+                imageResource = getResources().getDrawable(R.drawable.down, null);
                 return imageResource;
             case 3:
-                imageResource = getResources().getDrawable(R.drawable.leftbtn, null);
+                imageResource = getResources().getDrawable(R.drawable.left, null);
                 return imageResource;
             case 4:
-                imageResource = getResources().getDrawable(R.drawable.rightbtn, null);
+                imageResource = getResources().getDrawable(R.drawable.right, null);
                 return imageResource;
             case 5:
                 imageResource = getResources().getDrawable(R.drawable.stop, null);
@@ -350,7 +350,7 @@ public class MapView extends View {
 
     public void setRobotCoordinates(int row, int col) {
         //Check if the col and row is within the grid
-        Log.d(TAG, "Row " + row + "Col " + col);
+        //Log.d(TAG, "Row " + row + "Col " + col);
         if ((col >= 0 && col <= 14) && (row >= 0 && row <= 19)) {
             robotCol = col;
             robotRow = Math.abs(row - 19);
@@ -490,8 +490,6 @@ public class MapView extends View {
                 int x = Integer.parseInt(mapNumberIDString[i][0]);
                 int y = Math.abs(Integer.parseInt(mapNumberIDString[i][1]) - 19);
                 int numberID = Integer.parseInt(mapNumberIDString[i][2]);
-                String direction = mapNumberIDString[i][3];
-                Drawable directionResouce;
 
                 int arrowPositionCol = x;
                 int arrowPositionRow = y;
@@ -500,22 +498,28 @@ public class MapView extends View {
                 arrows.setBounds(new Rect((int) (cells[arrowPositionCol][arrowPositionRow].startX), (int) (cells[arrowPositionCol][arrowPositionRow].startY), ((int) cells[arrowPositionCol][arrowPositionRow].endX), ((int) cells[arrowPositionCol][arrowPositionRow].endY)));
                 arrows.draw(mapCanvas);
 
+                /*
+
+                Direction is not needed
+                String direction = mapNumberIDString[i][3];
+                Drawable directionResource;
+
                 if (direction.equals("Up")) {
                     arrowPositionRow = arrowPositionRow - 1;
-                    directionResouce = getResources().getDrawable(R.drawable.downbtn, null);
+                    directionResource = getResources().getDrawable(R.drawable.downbtn, null);
                 } else if (direction.equals("Down")) {
                     arrowPositionRow = arrowPositionRow + 1;
-                    directionResouce = getResources().getDrawable(R.drawable.upbtn, null);
+                    directionResource = getResources().getDrawable(R.drawable.upbtn, null);
                 } else if (direction.equals("Left")) {
                     arrowPositionCol = arrowPositionCol - 1;
-                    directionResouce = getResources().getDrawable(R.drawable.rightbtn, null);
+                    directionResource = getResources().getDrawable(R.drawable.rightbtn, null);
                 } else {
                     arrowPositionCol = arrowPositionCol + 1;
-                    directionResouce = getResources().getDrawable(R.drawable.leftbtn, null);
+                    directionResource = getResources().getDrawable(R.drawable.leftbtn, null);
                 }
 
-                directionResouce.setBounds(new Rect((int) (cells[arrowPositionCol][arrowPositionRow].startX), (int) (cells[arrowPositionCol][arrowPositionRow].startY), ((int) cells[arrowPositionCol][arrowPositionRow].endX), ((int) cells[arrowPositionCol][arrowPositionRow].endY)));
-                directionResouce.draw(mapCanvas);
+                directionResource.setBounds(new Rect((int) (cells[arrowPositionCol][arrowPositionRow].startX), (int) (cells[arrowPositionCol][arrowPositionRow].startY), ((int) cells[arrowPositionCol][arrowPositionRow].endX), ((int) cells[arrowPositionCol][arrowPositionRow].endY)));
+                directionResource.draw(mapCanvas);*/
             }
         }
     }

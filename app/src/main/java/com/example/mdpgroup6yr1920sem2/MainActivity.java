@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
     BluetoothAdapter mBluetoothAdapter;
     BluetoothConnectionService mBluetoothConnection;
 
-    StringBuilder messages, mdf_messages;
+    StringBuilder messages, mdf_message, mdf_message2, img_message;
+    ArrayList<String> imageString = new ArrayList<String>();
 
     private static final UUID MY_UUID_INSECURE = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -93,11 +94,11 @@ public class MainActivity extends AppCompatActivity {
 
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                mBTDevices.add(device);
-                /*
-                if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
+                //mBTDevices.add(device);
+
+                //if (device.getAddress().contains("B8:27:EB:67:AA:2A")) {
                     mBTDevices.add(device);
-                }*/
+                //}
                 //Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
                 mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
                 lvNewDevices.setAdapter(mDeviceListAdapter);
@@ -204,7 +205,9 @@ public class MainActivity extends AppCompatActivity {
         bluetoothToolBarText = (TextView) findViewById(R.id.bluetoothTextView);
 
         messages = new StringBuilder();
-        mdf_messages = new StringBuilder();
+        mdf_message = new StringBuilder();
+        mdf_message2 = new StringBuilder();
+        img_message = new StringBuilder();
 
         myReconfigureDialog = new Dialog(this);
 
@@ -361,27 +364,31 @@ public class MainActivity extends AppCompatActivity {
 
                 ((MapTab) pageradapter.fragment1).setIncomingText(statusTag);
 
-                String[] RPiString = new String[4];
+                String[] RPiString = new String[5];
                 String[] coordinates = new String[1];
 
                 //Split the string into multiple parts and save to array
                 RPiString = text.trim().split("\\|+");
 
                 //Remove square brackets and comma
-                coordinates = RPiString[3].replaceAll("\\[", "").replaceAll("\\]", "").trim().split(",");
+                coordinates = RPiString[4].replaceAll("\\[", "").replaceAll("\\]", "").trim().split(",");
 
                 ((MapTab) pageradapter.fragment1).setMapExploredObstacles(RPiString[1], RPiString[2]);
 
                 //Row / Column
                 ((MapTab) pageradapter.fragment1).setRobotCoordinates(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
-                ((MapTab) pageradapter.fragment1).setRobotDirection(RPiString[4]);
+                ((MapTab) pageradapter.fragment1).setRobotDirection(RPiString[5]);
 
                 messages.append(text + "\n");
                 ((CommsTab) pageradapter.fragment3).setIncomingText(messages);
 
-                mdf_messages.setLength(0);
-                mdf_messages.append(RPiString[2]);
-                ((CommsTab) pageradapter.fragment3).setMDFText(mdf_messages);
+                mdf_message.setLength(0);
+                mdf_message.append(RPiString[1]);
+                ((CommsTab) pageradapter.fragment3).setMDFText(mdf_message);
+
+                mdf_message2.setLength(0);
+                mdf_message2.append(RPiString[3]);
+                ((CommsTab) pageradapter.fragment3).setMDFText2(mdf_message2);
 
                 /*
                 if (text.contains("DONE")) {
@@ -412,9 +419,26 @@ public class MainActivity extends AppCompatActivity {
                 if (matcher.find()) {
                     text = matcher.group();
                     text = text.replace("\"", "");
-                    Log.d(TAG, text);
+                    //Log.d(TAG, text);
                     ((MapTab) pageradapter.fragment1).displayNumberID(text);
+
+
+                    //Trim to get current added images values
+                    String newString = text.trim();
+                    String[] numberArr = newString.split(",");
+
+                    //Create String for one item properly & push into the array
+                    String numberText = "(" + numberArr[2] + " , " + numberArr[0] + " , " + numberArr[1] + ")";
+                    imageString.add(numberText);
+                    img_message.setLength(0);
+                    img_message.append("{");
+                    for (int i = 0; i < imageString.size(); i++) {
+                        img_message.append(imageString.get(i) + ",");
+                    }
+                    img_message.append("}");
+                    ((CommsTab) pageradapter.fragment3).setImgText(img_message);
                 }
+
             } else {
                 messages.append(text + "\n");
                 ((CommsTab) pageradapter.fragment3).setIncomingText(messages);

@@ -35,7 +35,7 @@ public class CommsTab extends Fragment {
     }
 
     public MainActivity mainActivityObj;
-    private TextView incomingMessages, mdfMessage;
+    private TextView incomingMessages, mdfMessage, mdfMessage2, imgRegMessage;
     private View view;
     private String oldF1text, oldF2text;
     private String newF1text, newF2text;
@@ -159,7 +159,8 @@ public class CommsTab extends Fragment {
             // Receive Messages
             incomingMessages = (TextView) view.findViewById(R.id.incomingMessage);
             mdfMessage = (TextView) view.findViewById(R.id.mdfText);
-
+            mdfMessage2 = (TextView) view.findViewById(R.id.mdfText2);
+            imgRegMessage = (TextView) view.findViewById(R.id.mdfText3);
             loadData();
             updateViews(oldF1text, oldF2text);
         }
@@ -174,6 +175,11 @@ public class CommsTab extends Fragment {
     }
     public void setMDFText(StringBuilder yourText){
         mdfMessage.setText(yourText);
+    }
+    public void setMDFText2(StringBuilder yourText){
+        mdfMessage2.setText(yourText);
+    }
+    public void setImgText(StringBuilder yourText){  imgRegMessage.setText(yourText);
     }
 
     public void saveData(String newTextF1, String newTextF2) {

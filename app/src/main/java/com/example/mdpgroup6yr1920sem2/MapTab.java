@@ -293,7 +293,7 @@ public class MapTab extends Fragment {
 
     public void sendWaypointCoordinates(int col, int row) {
         if (mainActivityObj.mBluetoothConnection != null) {
-            String waypointMessage = "p|WAYPOINT|" + row + "|" + col;
+            String waypointMessage = "pWAYPOINT|" + row + "|" + col;
             byte[] bytes = waypointMessage.getBytes(Charset.defaultCharset());
             mainActivityObj.mBluetoothConnection.write(bytes);
         }
@@ -317,6 +317,7 @@ public class MapTab extends Fragment {
 
     public void displayNumberID(String numberIDString) {
         // 1. x 2. y 3. numberID 4. direction
+        // (x, y, numberId, direction)
         numberIDString = numberIDString.trim();
         String[] numberArr = numberIDString.split(",");
         mapView.initNumberID(numberArr);

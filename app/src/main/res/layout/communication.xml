@@ -13,7 +13,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#5AB1BB">
+        android:background="#5AB1BB"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="41dp">
 
         <EditText
             android:id="@+id/editText"
@@ -29,17 +31,17 @@
 
         <Button
             android:id="@+id/btnSend"
-            android:text="@string/send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/lvNewDevices"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/bg_side_btn"
-            android:theme="@style/SideBarLayout"
-            android:layout_below="@+id/lvNewDevices"
             android:layout_toEndOf="@+id/editText"
             android:layout_toRightOf="@+id/editText"
-            android:textAllCaps="false" />
+            android:background="@drawable/bg_side_btn"
+            android:text="@string/send"
+            android:textAllCaps="false"
+            android:theme="@style/SideBarLayout" />
 
         <ScrollView
             android:id="@+id/scrollViewForMessage"
@@ -68,60 +70,84 @@
         </ScrollView>
 
         <Button
-            android:id="@+id/btnF1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_side_btn"
-            android:theme="@style/SideBarLayout"
-            android:layout_below="@+id/scrollViewForMessage"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="170dp"
-            android:layout_marginTop="115dp"
-            android:layout_marginEnd="177dp"
-            android:text="@string/btn_f1"
-            android:textAllCaps="false" />
-
-        <Button
             android:id="@+id/btnF2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_side_btn"
-            android:theme="@style/SideBarLayout"
             android:layout_below="@+id/btnF1"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="170dp"
+            android:layout_marginStart="164dp"
             android:layout_marginTop="44dp"
-            android:layout_marginEnd="177dp"
+            android:layout_marginEnd="183dp"
+            android:background="@drawable/bg_side_btn"
             android:text="@string/btn_f2"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:theme="@style/SideBarLayout" />
 
         <Button
             android:id="@+id/btnReconfigure"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_side_btn"
-            android:theme="@style/SideBarLayout"
             android:layout_below="@+id/btnF2"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="173dp"
-            android:layout_marginTop="36dp"
-            android:layout_marginEnd="174dp"
-            android:text="@string/btn_reconfigure" />
+            android:layout_marginStart="167dp"
+            android:layout_marginTop="37dp"
+            android:layout_marginEnd="180dp"
+            android:background="@drawable/bg_side_btn"
+            android:text="@string/btn_reconfigure"
+            android:theme="@style/SideBarLayout" />
+
+        <Button
+            android:id="@+id/btnF1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/scrollViewForMessage"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="164dp"
+            android:layout_marginTop="286dp"
+            android:layout_marginEnd="183dp"
+            android:background="@drawable/bg_side_btn"
+            android:text="@string/btn_f1"
+            android:textAllCaps="false"
+            android:theme="@style/SideBarLayout" />
 
         <TextView
             android:id="@+id/mdfStaticText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/scrollViewForMessage"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"
-            android:text="MDFString-"
+            android:layout_marginTop="23dp"
+            android:layout_marginBottom="10dp"
+            android:text="MDFString"
             android:textSize="16dp"
-            android:theme="@style/SideBarLayout"/>
+            android:theme="@style/SideBarLayout" />
+
+        <TextView
+            android:id="@+id/mdfStaticText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/scrollViewForMessage"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="75dp"
+            android:layout_marginBottom="10dp"
+            android:text="MDFString2"
+            android:textSize="16dp"
+            android:theme="@style/SideBarLayout" />
+
+        <TextView
+            android:id="@+id/mdfStaticText3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/scrollViewForMessage"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="124dp"
+            android:layout_marginBottom="10dp"
+            android:text="ImageReg"
+            android:textSize="16dp"
+            android:theme="@style/SideBarLayout" />
 
         <TextView
             android:id="@+id/mdfText"
@@ -130,6 +156,30 @@
             android:layout_below="@+id/scrollViewForMessage"
             android:layout_marginStart="5dp"
             android:layout_marginTop="12dp"
+            android:layout_marginEnd="10dp"
+            android:layout_toEndOf="@+id/mdfStaticText"
+            android:background="#FFFFFF"
+            android:text="000000000000000000000000000000000000000000000000000000000000000000000000000" />
+
+        <TextView
+            android:id="@+id/mdfText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/scrollViewForMessage"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="65dp"
+            android:layout_marginEnd="10dp"
+            android:layout_toEndOf="@+id/mdfStaticText"
+            android:background="#FFFFFF"
+            android:text="000000000000000000000000000000000000000000000000000000000000000000000000000" />
+
+        <TextView
+            android:id="@+id/mdfText3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/scrollViewForMessage"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="118dp"
             android:layout_marginEnd="10dp"
             android:layout_toEndOf="@+id/mdfStaticText"
             android:background="#FFFFFF"
